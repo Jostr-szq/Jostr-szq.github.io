@@ -4,6 +4,58 @@
   
     
     <entry>
+      <title></title>
+      <link href="2021/05/07/Runloop/"/>
+      <url>2021/05/07/Runloop/</url>
+      
+        <content type="html"><![CDATA[<hr><hr><p>原理：</p><ol><li><p>什么是Runloop?</p><p>Runloop是一个调度任务和处理任务的事件循环。Runloop的目的是为了在有工作的时候让线程忙起来，而在没工作的时候让线程进入休眠状态。简单的说RunLoop是一种高级的循环机制，让程序持续运行，并处理程序中的各种事件，让线程在需要做事的时候忙起来，不需要的话就让线程休眠。</p></li><li><p>Runloop和线程？</p><p>RunLoop<code>和线程是绑定在一起的，每条线程都有唯一一个与之对应的</code>RunLoop对象<code>。不能自己创建</code>RunLoop对象<code>，但是可以获取系统提供的</code>RunLoop对象<code>。主线程的</code>RunLoop对象<code>是由系统自动创建好的，在应用程序启动的时候会自动完成启动，而子线程中的</code>RunLoop对象`需要我们手动获取并启动。</p><p>线程刚创建时并没有 RunLoop，如果你不主动获取，那它一直都不会有。RunLoop 的创建是发生在第一次获取时，RunLoop 的销毁是发生在线程结束时。你只能在一个线程的内部获取其 RunLoop（主线程除外）。</p></li><li><p>Runloop对外接口</p><p>一个 RunLoop 包含若干个 Mode，每个 Mode 又包含若干个 Source/Timer/Observer。每次调用 RunLoop 的主函数时，只能指定其中一个 Mode，这个Mode被称作 CurrentMode。如果需要切换 Mode，只能退出 Loop，再重新指定一个 Mode 进入。这样做主要是为了分隔开不同组的 Source/Timer/Observer，让其互不影响。</p><p>苹果文档中提到的 Mode 有五个，分别是：</p><ul><li>NSDefaultRunLoopMode</li><li>NSConnectionReplyMode</li><li>NSModalPanelRunLoopMode</li><li>NSEventTrackingRunLoopMode</li><li>NSRunLoopCommonModes</li></ul><p>iOS 中公开暴露出来的只有 NSDefaultRunLoopMode 和 NSRunLoopCommonModes。 NSRunLoopCommonModes 实际上是一个 Mode 的集合，默认包括 NSDefaultRunLoopMode 和 NSEventTrackingRunLoopMode。</p><p>应用场景举例：主线程的 RunLoop 里有两个预置的 Mode：kCFRunLoopDefaultMode 和 UITrackingRunLoopMode。这两个 Mode 都已经被标记为”Common”属性。DefaultMode 是 App 平时所处的状态，TrackingRunLoopMode 是追踪 ScrollView 滑动时的状态。当你创建一个 Timer 并加到 DefaultMode 时，Timer 会得到重复回调，但此时滑动一个TableView时，RunLoop 会将 mode 切换为 TrackingRunLoopMode，这时 Timer 就不会被回调，并且也不会影响到滑动操作。</p><p>有时你需要一个 Timer，在两个 Mode 中都能得到回调，一种办法就是将这个 Timer 分别加入这两个 Mode。还有一种方式，就是将 Timer 加入到顶层的 RunLoop 的 “commonModeItems” 中。”commonModeItems” 被 RunLoop 自动更新到所有具有”Common”属性的 Mode 里去。</p></li></ol><p>实践</p><ol><li><p>AutoReleasePool</p><p>App启动后，苹果在主线程 RunLoop 里注册了两个 Observer，其回调都是 _wrapRunLoopWithAutoreleasePoolHandler()。</p><p>第一个 Observer 监视的事件是 Entry(即将进入Loop)，其回调内会调用 _objc_autoreleasePoolPush() 创建自动释放池。其 order 是-2147483647，优先级最高，保证创建释放池发生在其他所有回调之前。</p><p>第二个 Observer 监视了两个事件： BeforeWaiting(准备进入休眠) 时调用_objc_autoreleasePoolPop() 和 _objc_autoreleasePoolPush() 释放旧的池并创建新池；Exit(即将退出Loop) 时调用 _objc_autoreleasePoolPop() 来释放自动释放池。这个 Observer 的 order 是 2147483647，优先级最低，保证其释放池子发生在其他所有回调之后。</p><p>在主线程执行的代码，通常是写在诸如事件回调、Timer回调内的。这些回调会被 RunLoop 创建好的 AutoreleasePool 环绕着，所以不会出现内存泄漏，开发者也不必显示创建 Pool 了。</p></li><li><p>事件响应</p><p>mack port -&gt; source1回调 -&gt;source0回调 将IOHIDEvent对象封装成UIEvent对象，并放入UIApplication的事件队列中，单例的 UIApplication 会从事件队列中取出触摸事件并传递给单例的 UIWindow 来处理，UIWindow 对象首先会使用 <code>hitTest:withEvent:</code>方法寻找此次 Touch 操作初始点所在的视图(View)，即需要将触摸事件传递给其处理的视图，这个过程称之为 hit-test view。</p><p><code>hitTest:withEvent:</code>方法的处理流程如下:</p><ul><li>首先调用当前视图的 <code>pointInside:withEvent:</code> 方法判断触摸点是否在当前视图内；</li><li>若返回 NO, 则 <code>hitTest:withEvent:</code> 返回 nil，若返回 YES, 则向当前视图的所有子视图 (subviews) 发送 <code>hitTest:withEvent:</code> 消息，所有子视图的遍历顺序是从最顶层视图一直到到最底层视图，即从 subviews 数组的末尾向前遍历，直到有子视图返回非空对象或者全部子视图遍历完毕；</li><li>若第一次有子视图返回非空对象，则 <code>hitTest:withEvent:</code> 方法返回此对象，处理结束；</li><li>如所有子视图都返回空，则 hitTest:withEvent: 方法返回自身 (self)。</li></ul></li><li><p>NSTimer</p><p>NSTimer 其实就是 CFRunLoopTimerRef，他们之间是 toll-free bridged 的。一个 NSTimer 注册到 RunLoop 后，RunLoop 会为其重复的时间点注册好事件。例如 10:00, 10:10, 10:20 这几个时间点。RunLoop为了节省资源，并不会在非常准确的时间点回调这个Timer。Timer 有个属性叫做 Tolerance (宽容度)，标示了当时间点到后，容许有多少最大误差。</p><p>如果某个时间点被错过了，例如执行了一个很长的任务，则那个时间点的回调也会跳过去，不会延后执行。就比如等公交，如果 10:10 时我忙着玩手机错过了那个点的公交，那我只能等 10:20 这一趟了。</p></li><li><p>performSelecter</p><p>当调用 NSObject 的 performSelecter:afterDelay: 后，实际上其内部会创建一个 Timer 并添加到当前线程的 RunLoop 中。所以如果当前线程没有 RunLoop，则这个方法会失效。</p><p>当调用 performSelector:onThread: 时，实际上其会创建一个 Timer 加到对应的线程去，同样的，如果对应线程没有 RunLoop 该方法也会失效。</p></li><li><p>线程保活</p></li></ol>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title></title>
+      <link href="2021/05/07/Swift-%E9%9D%A2%E8%AF%95%E9%A2%98/"/>
+      <url>2021/05/07/Swift-%E9%9D%A2%E8%AF%95%E9%A2%98/</url>
+      
+        <content type="html"><![CDATA[<hr><hr><ol><li><p>swift中struct和class有什么区别？</p><p>stuct是值引用，更轻量，存放于栈区；class是类型引用，存放于堆区。struct无法继承，class可继承</p></li><li></li></ol>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title></title>
+      <link href="2021/04/15/Untitled%201/"/>
+      <url>2021/04/15/Untitled%201/</url>
+      
+        <content type="html"><![CDATA[<p>自我介绍</p><p>各位</p>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title></title>
+      <link href="2021/04/15/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/"/>
+      <url>2021/04/15/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Runtime - 进阶篇</title>
       <link href="2021/03/24/Runtime-Part2/"/>
       <url>2021/03/24/Runtime-Part2/</url>
@@ -60,6 +112,32 @@
             <tag> 基础 </tag>
             
         </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>面试题-消息传递</title>
+      <link href="2018/12/12/Untitled/"/>
+      <url>2018/12/12/Untitled/</url>
+      
+        <content type="html"><![CDATA[<h3 id="1-KVC的实现原理"><a href="#1-KVC的实现原理" class="headerlink" title="1.KVC的实现原理"></a>1.KVC的实现原理</h3>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>面试题-内存篇</title>
+      <link href="2018/12/12/%E9%9D%A2%E8%AF%95%E9%A2%98-Part1/"/>
+      <url>2018/12/12/%E9%9D%A2%E8%AF%95%E9%A2%98-Part1/</url>
+      
+        <content type="html"><![CDATA[<h3 id="1-什么情况使用weak关键字，相比assign有什么不同？"><a href="#1-什么情况使用weak关键字，相比assign有什么不同？" class="headerlink" title="1.什么情况使用weak关键字，相比assign有什么不同？"></a>1.什么情况使用weak关键字，相比assign有什么不同？</h3><ul><li><p>在ARC中，在有可能出现循环引用的时候，往往要通过让其中一端使用weak来解决，比如:delegate,block。</p></li><li><p>自身已经对它进行一次强引用，没有必要再强引用一次,此时也会使用weak。</p></li><li><p>自定义IBOutlet控件属性一般也使用weak，当然也可以使用strong</p><p>不同点:</p><ul><li>weak 此特质表明该属性定义了一种”非拥有关系”。为这种属性设置新值时，设置方法既不保留新值，也不释放旧值。此特质同assign类似，然而在属性所指的对象遭到销毁时，属性值也会清空。而assign的”设置方法”只会执行针对”纯量类型”(scalar type，例如 CGFloat或 NSInteger等)的简单赋值操作</li><li>assign可以用非OC对象，weak必须用于OC对象</li></ul></li></ul><h3 id="2-weak的实现原理？"><a href="#2-weak的实现原理？" class="headerlink" title="2.weak的实现原理？"></a>2.weak的实现原理？</h3><p>Runtime对注册的类，会进行布局，对于weak对象会放入一个hash表中。用weak指向的对象内存地址作为key，当此对象的引用计数为0的时候会dealloc，假如weak指向的内存地址为a，那么就会以a为键，在这个weak表中搜索，找到所有以a为键的weak对象，从而设置为nil。</p><h3 id="3-关联对象的应用？系统如何实现关联对象的？"><a href="#3-关联对象的应用？系统如何实现关联对象的？" class="headerlink" title="3.关联对象的应用？系统如何实现关联对象的？"></a>3.关联对象的应用？系统如何实现关联对象的？</h3><p>分类与关联对象是OC的扩展机制的两个特性，分类：可以通过它扩展方法；关联对象，可以通过它来扩展属性。<br>在iOS开发中，可能category比较常见，相对的关联属性就用的较少，要用它之前，需要先导入runtime头文件</p><p>如何关联对象<br> runtime提供了给我们三个API进行管理关联对象</p><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//关联对象</span></span><br><span class="line"><span class="keyword">void</span> objc_setAssociatedObject(id object, <span class="keyword">const</span> <span class="keyword">void</span> *key, id value, objc_AssociationPolicy policy)</span><br><span class="line"><span class="comment">//获取关联的对象</span></span><br><span class="line">id objc_getAssociatedObject(id object, <span class="keyword">const</span> <span class="keyword">void</span> *key)</span><br><span class="line"><span class="comment">//移除关联的对象</span></span><br><span class="line"><span class="keyword">void</span> objc_removeAssociatedObjects(id object)</span><br></pre></td></tr></table></figure><p>其中的参数</p><ul><li><code>id object</code>：被关联的对象</li><li><code>const void *key</code>：关联的key，要求唯一</li><li><code>id value</code>：关联的对象</li><li><code>objc_AssociationPolicy policy</code>：内存管理的策略 </li></ul><p>关系对象的应用</p><ul><li>为分类添加属性</li><li>为UI控件关联事件Block（Alert添加回调事件Block）</li><li>关联观察者对象（AFNetworking为菊花控件监听NSURLSessionTask以获取网络进度的分类）</li></ul><h3 id="4-关联对象如何进行内存管理？关联对象如何实现weak属性"><a href="#4-关联对象如何进行内存管理？关联对象如何实现weak属性" class="headerlink" title="4.关联对象如何进行内存管理？关联对象如何实现weak属性"></a>4.关联对象如何进行内存管理？关联对象如何实现weak属性</h3><ul><li><p>关联对象的ObjectAssociation中有objc_AssociationPolicy该属性，内存管理策略，包含多个枚举(retain，assgin，copy等)，会对对应的对象进行和普通对象一样的内存管理操作</p><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">typedef OBJC_ENUM(uintptr_t, objc_AssociationPolicy) &#123;</span><br><span class="line">    OBJC_ASSOCIATION_ASSIGN = <span class="number">0</span>,           <span class="comment">/**&lt; Specifies a weak reference to the associated object. */</span></span><br><span class="line">    OBJC_ASSOCIATION_RETAIN_NONATOMIC = <span class="number">1</span>, <span class="comment">/**&lt; Specifies a strong reference to the associated object. </span></span><br><span class="line"><span class="comment">                                            *   The association is not made atomically. */</span></span><br><span class="line">    OBJC_ASSOCIATION_COPY_NONATOMIC = <span class="number">3</span>,   <span class="comment">/**&lt; Specifies that the associated object is copied. </span></span><br><span class="line"><span class="comment">                                            *   The association is not made atomically. */</span></span><br><span class="line">    OBJC_ASSOCIATION_RETAIN = <span class="number">01401</span>,       <span class="comment">/**&lt; Specifies a strong reference to the associated object.</span></span><br><span class="line"><span class="comment">                                            *   The association is made atomically. */</span></span><br><span class="line">    OBJC_ASSOCIATION_COPY = <span class="number">01403</span>          <span class="comment">/**&lt; Specifies that the associated object is copied.</span></span><br><span class="line"><span class="comment">                                            *   The association is made atomically. */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></li><li><p>关联对象实现weak，可用__weak修饰对象，并将其用block包裹，关联该block对象；或者生命一个类，持有一个weak的成员变量，然后通过实例化我们自定义的class实例，然后把这个实例作为关联对象即可。</p></li></ul><h3 id="5-Autoreleasepool的原理？所使用的数据结构是什么-？"><a href="#5-Autoreleasepool的原理？所使用的数据结构是什么-？" class="headerlink" title="5.Autoreleasepool的原理？所使用的数据结构是什么 ？"></a>5.Autoreleasepool的原理？所使用的数据结构是什么 ？</h3><p>动释放池是有N张<code>AutoreleasePoolPage</code>组成,每张page 4K大小, AutoreleasePoolPage是<a href="https://www.wangt.cc/tag/c/">c++</a>的类, AutoreleasePoolPage以双向链表连接起来形成一个自动释放池。编译后，autoreleasepool是一个全局变量，每一个线程，在runloop启动时都会准备一个autoreleasepool，主要是两个方法，push，pop。<br>push就是在page中插入一个哨兵对象,代表这些属于要一起release的对象,如果page满了,则创建新的page,并合老的page关联起来,对象指针压栈<br>pop就是从传入哨兵对象往后,所有对象,依次执行release。</p><p>autoreleasepool的作用：释放临时变量缓解内存高涨</p><p>autoreleasepool什么时候创建？什么时候销毁？</p><ul><li>第一次创建：启动<code>runloop</code>时</li><li>最后一次销毁：<code>runloop</code>退出时</li><li>其他时候的创建和销毁：当<code>runloop</code>即将进行<code>休眠状态</code>时会销毁旧的释放池，并创建一个新的释放池。</li></ul><p>runloop运行结束时，会倾倒autoreleasepool，并对pool里的每一个对象发送一个release消息；然后autoreleasepool被drain 销毁</p><h3 id="6-ARC的实现原理？ARC下对保留，释放已进行了一些优化"><a href="#6-ARC的实现原理？ARC下对保留，释放已进行了一些优化" class="headerlink" title="6.ARC的实现原理？ARC下对保留，释放已进行了一些优化"></a>6.ARC的实现原理？ARC下对保留，释放已进行了一些优化</h3><p>ARC自动引用计数，是苹果objc4日期的编译器自动在适当位置帮助实例对象进行自动保留其他释放的一套机制。它的实现原理就是在编译扩展插入相关代码，帮助补全MRC时代需要开发者手动填充的和管理的对象的相关内存操作的方法。为了解释清楚具体实现原理，从代码编译成汇编过程中编译器做了很多优化工作。更新<code>isa指针</code>的信息。</p><h3 id="7-ARC什么情况下会造成内存泄漏？"><a href="#7-ARC什么情况下会造成内存泄漏？" class="headerlink" title="7.ARC什么情况下会造成内存泄漏？"></a>7.ARC什么情况下会造成内存泄漏？</h3><ul><li>block的循环引用</li><li>NSTimer的循环引用</li><li>addObserver的循环引用</li><li>delegate的强引用</li><li>大次数循环内存暴涨</li><li>非oc对象的内存处理（需手动释放）</li></ul><h3 id="8-iOS内存分区情况"><a href="#8-iOS内存分区情况" class="headerlink" title="8.iOS内存分区情况"></a>8.iOS内存分区情况</h3><ul><li><p>栈区 </p><p>存放临时创建的局部变量、先进后出、一旦出了作用域就会被销毁；函数跳转地址，现场保护等； 程序猿不需要管理栈区变量的内存（栈区地址从高到低分配）</p></li><li><p>堆区</p><p>堆区的内存分配使用的是alloc，调用malloc函数，新分配的内存动态添加到堆上<br> 需要程序猿管理内存；ARC的内存的管理，是编译器在编译的时候自动添加 retain、release、autorelease；（堆区的地址是从低到高分配）</p></li><li><p>全局区/静态区</p><p>包括两个部分：未初始化过 、初始化过。也就是说，（全局区／静态区）在内存中是放在一起的，初始化的全局变量和静态变量在一块区域， 未初始化的全局变量和未初始化的静态变量在相邻的另一块区域；<br> eg：int a;未初始化的。int a = 10;已初始化的。</p></li><li><p>常量区</p><p>常量字符串就是放在这里</p></li><li><p>代码区</p><p>存放app代码</p></li></ul>]]></content>
+      
+      
       
     </entry>
     
