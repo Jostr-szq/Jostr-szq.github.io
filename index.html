@@ -67,6 +67,65 @@
     <h1 class="page-type-title"></h1>
     
     
+    <article id="post-Runtime-Part1" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+
+    
+    <div class="article-meta">
+      <a href="/2021/11/05/Runtime-Part1/" class="article-date">
+  <time datetime="2021-11-05T02:21:58.000Z" itemprop="datePublished">2021-11-05</time>
+</a>
+      
+<div class="article-category">
+  <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a> / <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/iOS%E8%BF%9B%E9%98%B6/">iOS进阶</a>
+</div>
+
+    </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+        
+      
+      
+        <h1 id="一、什么是动态语言，什么是Runtime？"><a href="#一、什么是动态语言，什么是Runtime？" class="headerlink" title="一、什么是动态语言，什么是Runtime？"></a>一、什么是动态语言，什么是Runtime？</h1><h2 id="静态语言-强类型语言-："><a href="#静态语言-强类型语言-：" class="headerlink" title="静态语言(强类型语言)："></a>静态语言(强类型语言)：</h2><p>静态语言是在编译时就要确定变量的数据类型，也就是变量使用之前必须声明数据类型。如：C、C++、Java、C#等。</p>
+<h2 id="动态语言-弱类型语言"><a href="#动态语言-弱类型语言" class="headerlink" title="动态语言(弱类型语言):"></a>动态语言(弱类型语言):</h2><p>动态语言是在运行时才去做数据类型检查的语言，变量使用之前不需要类型声明，通常变量的类型是被赋值的那个值的类型。如：PHP、Ruby、Shell、Python等一些脚本语言。</p>
+<h2 id="为什么说OC是一门动态语言"><a href="#为什么说OC是一门动态语言" class="headerlink" title="为什么说OC是一门动态语言:"></a>为什么说OC是一门动态语言:</h2><p>静态、动态是相对的，这里动态语言指的是不需要再编译阶段就确定所有变量方法等，还可以在运行时动态的添加。 Objective-C，在C语言的基础上添加了面向对象的特性，并且通过Runtime这个运行时机制，在运行时可以动态的添加变量，方法，类等，所以说Objective-C是一门动态语言。</p>
+<h2 id="OC的动态性"><a href="#OC的动态性" class="headerlink" title="OC的动态性:"></a>OC的动态性:</h2><h3 id="1-动态类型"><a href="#1-动态类型" class="headerlink" title="1.动态类型:"></a>1.动态类型:</h3><p>如id类型。实际上静态类型因为其固定性和可预知性而使用的特别广泛。静态类型是强类型，动态类型是弱类型，运行时决定接收者。</p>
+<h3 id="2-动态绑定"><a href="#2-动态绑定" class="headerlink" title="2.动态绑定:"></a>2.动态绑定:</h3><p>让代码在运行时判断需要调用什么方法，而不是在编译时。与其他面向对象语言一样，方法调用和代码并没有在编译时连接在一起，而是在消息发送时才进行连接。运行时决定调用哪个方法。</p>
+<h3 id="3-动态载入"><a href="#3-动态载入" class="headerlink" title="3.动态载入:"></a>3.动态载入:</h3><p> 让程序在运行时添加代码模块已经其他资源。用户可以根据需要执行一些可执行代码和资源，而不是在启动时就加载所有资源组件。可执行代码中可以含有和程序运行时整合的新类。</p>
+        
+          <p>
+            <a class="article-more-link" href="/2021/11/05/Runtime-Part1/">
+              Read More...
+            </a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="blog.cfjia.cc/2021/11/05/Runtime-Part1/" data-id="ckvlr73xu0003ut3qft5w335y" class="article-share-link">
+        Share
+      </a>
+      
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Runtime/" rel="tag">Runtime</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/" rel="tag">iOS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%9F%BA%E7%A1%80/" rel="tag">基础</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+    
     <article id="post-Runloop" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -164,7 +223,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="blog.cfjia.cc/2021/11/04/Runloop/" data-id="ckvlprlag0001pe3qarfuey5y" class="article-share-link">
+      <a data-url="blog.cfjia.cc/2021/11/04/Runloop/" data-id="ckvlr73xr0001ut3q3x5q1869" class="article-share-link">
         Share
       </a>
       
@@ -233,77 +292,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="blog.cfjia.cc/2021/03/24/Runtime-Part2/" data-id="ckvlprlat000npe3qa1jb3wnb" class="article-share-link">
-        Share
-      </a>
-      
-<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Runtime/" rel="tag">Runtime</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/" rel="tag">iOS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%9F%BA%E7%A1%80/" rel="tag">基础</a></li></ul>
-
-    </footer>
-
-  </div>
-
-  
-
-  
-
-</article>
-    
-    <article id="post-Runtime-Part1" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-      
-
-<h2 itemprop="name">
-  <a class="article-title" href="/2020/08/14/Runtime-Part1/">Runtime - 基础篇</a>
-</h2>
-
-
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/2020/08/14/Runtime-Part1/" class="article-date">
-  <time datetime="2020-08-14T08:35:01.262Z" itemprop="datePublished">2020-08-14</time>
-</a>
-      
-<div class="article-category">
-  <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a> / <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/iOS%E8%BF%9B%E9%98%B6/">iOS进阶</a>
-</div>
-
-    </div>
-    
-
-    
-
-    <div class="article-entry" itemprop="articleBody">
-      
-      
-        
-      
-      
-        <h1 id="一、什么是动态语言，什么是Runtime？"><a href="#一、什么是动态语言，什么是Runtime？" class="headerlink" title="一、什么是动态语言，什么是Runtime？"></a>一、什么是动态语言，什么是Runtime？</h1><h2 id="静态语言-强类型语言-："><a href="#静态语言-强类型语言-：" class="headerlink" title="静态语言(强类型语言)："></a>静态语言(强类型语言)：</h2><p>静态语言是在编译时就要确定变量的数据类型，也就是变量使用之前必须声明数据类型。如：C、C++、Java、C#等。</p>
-<h2 id="动态语言-弱类型语言"><a href="#动态语言-弱类型语言" class="headerlink" title="动态语言(弱类型语言):"></a>动态语言(弱类型语言):</h2><p>动态语言是在运行时才去做数据类型检查的语言，变量使用之前不需要类型声明，通常变量的类型是被赋值的那个值的类型。如：PHP、Ruby、Shell、Python等一些脚本语言。</p>
-<h2 id="为什么说OC是一门动态语言"><a href="#为什么说OC是一门动态语言" class="headerlink" title="为什么说OC是一门动态语言:"></a>为什么说OC是一门动态语言:</h2><p>静态、动态是相对的，这里动态语言指的是不需要再编译阶段就确定所有变量方法等，还可以在运行时动态的添加。<br>Objective-C，在C语言的基础上添加了面向对象的特性，并且通过Runtime这个运行时机制，在运行时可以动态的添加变量，方法，类等，所以说Objective-C是一门动态语言。</p>
-<h2 id="OC的动态性"><a href="#OC的动态性" class="headerlink" title="OC的动态性:"></a>OC的动态性:</h2><h3 id="1-动态类型"><a href="#1-动态类型" class="headerlink" title="1.动态类型:"></a>1.动态类型:</h3><p>如id类型。实际上静态类型因为其固定性和可预知性而使用的特别广泛。静态类型是强类型，动态类型是弱类型，运行时决定接收者。</p>
-<h3 id="2-动态绑定"><a href="#2-动态绑定" class="headerlink" title="2.动态绑定:"></a>2.动态绑定:</h3><p>让代码在运行时判断需要调用什么方法，而不是在编译时。与其他面向对象语言一样，方法调用和代码并没有在编译时连接在一起，而是在消息发送时才进行连接。运行时决定调用哪个方法。</p>
-<h3 id="3-动态载入"><a href="#3-动态载入" class="headerlink" title="3.动态载入:"></a>3.动态载入:</h3><p> 让程序在运行时添加代码模块已经其他资源。用户可以根据需要执行一些可执行代码和资源，而不是在启动时就加载所有资源组件。可执行代码中可以含有和程序运行时整合的新类。</p>
-        
-          <p>
-            <a class="article-more-link" href="/2020/08/14/Runtime-Part1/">
-              Read More...
-            </a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="blog.cfjia.cc/2020/08/14/Runtime-Part1/" data-id="ckvlprlaj0003pe3q0jed3bs5" class="article-share-link">
+      <a data-url="blog.cfjia.cc/2021/03/24/Runtime-Part2/" data-id="ckvlr73y5000nut3q0d8f6cco" class="article-share-link">
         Share
       </a>
       
