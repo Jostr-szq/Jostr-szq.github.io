@@ -54,8 +54,8 @@
 
     
     <div class="article-meta">
-      <a href="/2021/03/24/Runtime-Part2/" class="article-date">
-  <time datetime="2021-03-24T02:56:14.158Z" itemprop="datePublished">2021-03-24</time>
+      <a href="/2021/11/02/Runtime-Part2/" class="article-date">
+  <time datetime="2021-11-02T02:21:58.000Z" itemprop="datePublished">2021-11-02</time>
 </a>
       
 <div class="article-category">
@@ -123,7 +123,7 @@
 <figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//OC方法：</span></span><br><span class="line"><span class="comment">//类方法未找到时调起，可于此添加类方法实现</span></span><br><span class="line">+ (<span class="type">BOOL</span>)resolveClassMethod:(<span class="type">SEL</span>)sel</span><br><span class="line"></span><br><span class="line"><span class="comment">//实例方法未找到时调起，可于此添加实例方法实现</span></span><br><span class="line">+ (<span class="type">BOOL</span>)resolveInstanceMethod:(<span class="type">SEL</span>)sel</span><br><span class="line"></span><br><span class="line"><span class="comment">//Runtime方法：</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> 运行时方法：向指定类中添加特定方法实现的操作</span></span><br><span class="line"><span class="comment"> @param cls 被添加方法的类</span></span><br><span class="line"><span class="comment"> @param name selector方法名</span></span><br><span class="line"><span class="comment"> @param imp 指向实现方法的函数指针</span></span><br><span class="line"><span class="comment"> @param types imp函数实现的返回值与参数类型</span></span><br><span class="line"><span class="comment"> @return 添加方法是否成功</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">BOOL</span> class_addMethod(<span class="type">Class</span> _Nullable cls,</span><br><span class="line">                     <span class="type">SEL</span> _Nonnull name,</span><br><span class="line">                     <span class="type">IMP</span> _Nonnull imp,</span><br><span class="line">                     const char * _Nullable types)</span><br></pre></td></tr></table></figure>
 
 <h2 id="2-解决方法无响应崩溃问题"><a href="#2-解决方法无响应崩溃问题" class="headerlink" title="2. 解决方法无响应崩溃问题"></a>2. 解决方法无响应崩溃问题</h2><p>执行OC方法其实就是一个发送消息的过程，若方法未实现，我们可以利用方法动态解析与消息转发来避免程序崩溃，这主要涉及下面一个处理未实现消息的过程：</p>
-<img src="/2021/03/24/Runtime-Part2/lct.png" class="" title="消息转发流程图">
+<img src="/2021/11/02/Runtime-Part2/lct.png" class="" title="消息转发流程图">
 
 <p>除了上述的方法动态解析，还使用到的相关方法如下：<br> 消息接收者重定向</p>
 <figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//重定向类方法的消息接收者，返回一个类</span></span><br><span class="line">- (id)forwardingTargetForSelector:(<span class="type">SEL</span>)aSelector</span><br><span class="line"></span><br><span class="line"><span class="comment">//重定向实例方法的消息接受者，返回一个实例对象</span></span><br><span class="line">- (id)forwardingTargetForSelector:(<span class="type">SEL</span>)aSelector</span><br></pre></td></tr></table></figure>
@@ -143,7 +143,7 @@
 <figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//--测试归档</span></span><br><span class="line"><span class="type">Person</span> *ps = [[<span class="type">Person</span> alloc] <span class="keyword">init</span>];</span><br><span class="line">ps.name = @<span class="string">&quot;梧雨北辰&quot;</span>;</span><br><span class="line">ps.age  = <span class="number">18</span>;</span><br><span class="line"><span class="type">NSString</span> *temp = <span class="type">NSTemporaryDirectory</span>();</span><br><span class="line"><span class="type">NSString</span> *fileTemp = [temp stringByAppendingString:@<span class="string">&quot;person.archive&quot;</span>];</span><br><span class="line">[<span class="type">NSKeyedArchiver</span> archiveRootObject:ps toFile:fileTemp];</span><br><span class="line"></span><br><span class="line"><span class="comment">//--测试解档</span></span><br><span class="line"><span class="type">NSString</span> *temp = <span class="type">NSTemporaryDirectory</span>();</span><br><span class="line"><span class="type">NSString</span> *fileTemp = [temp stringByAppendingString:@<span class="string">&quot;person.henry&quot;</span>];</span><br><span class="line"><span class="type">Person</span> *person = [<span class="type">NSKeyedUnarchiver</span> unarchiveObjectWithFile:fileTemp];</span><br><span class="line"><span class="type">NSLog</span>(@<span class="string">&quot;person-name:%@，person-age:%ld&quot;</span>,person.name,person.age); </span><br><span class="line"><span class="comment">//person-name:梧雨北辰，person-age:18</span></span><br></pre></td></tr></table></figure>
 
 <h2 id="3-实现字典与模型的转换"><a href="#3-实现字典与模型的转换" class="headerlink" title="3. 实现字典与模型的转换"></a>3. 实现字典与模型的转换</h2><p>字典数据转模型的操作在项目开发中很常见，通常我们会选择第三方如YYModel；其实我们也可以自己来实现这一功能，主要的思路有两种：KVC、Runtime，总结字典转化模型过程中需要解决的问题如下：</p>
-<img src="/2021/03/24/Runtime-Part2/zdzmx.png" class="" title="字典转模型">
+<img src="/2021/11/02/Runtime-Part2/zdzmx.png" class="" title="字典转模型">
 
 <p>现在，我们使用Runtime来实现字典转模型的操作，大致的思路是这样：<br> <strong><em>借助Runtime可以动态获取成员列表的特性，遍历模型中所有属性，然后以获取到的属性名为key，在JSON字典中寻找对应的值value；再将每一个对应Value赋值给模型，就完成了字典转模型的目的\</em></strong>。</p>
 <p>首先准备下面的JSON数据用于测试：</p>
@@ -171,7 +171,7 @@
 
 <h3 id="步骤4：测试字典转模型操作"><a href="#步骤4：测试字典转模型操作" class="headerlink" title="步骤4：测试字典转模型操作"></a>步骤4：测试字典转模型操作</h3><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//读取JSON数据</span></span><br><span class="line"><span class="type">NSDictionary</span> *jsonData = [<span class="type">FileTools</span> getDictionaryFromJsonFile:@<span class="string">&quot;Student&quot;</span>];</span><br><span class="line"><span class="type">NSLog</span>(@<span class="string">&quot;%@&quot;</span>,jsonData);</span><br><span class="line"></span><br><span class="line"><span class="comment">//字典转模型</span></span><br><span class="line"><span class="type">StudentModel</span> *student = [<span class="type">StudentModel</span> zs_modelWithDictionary:jsonData];</span><br><span class="line"><span class="type">CourseModel</span> *courseModel = student.courses[<span class="number">0</span>];</span><br><span class="line"><span class="type">NSLog</span>(@<span class="string">&quot;%@&quot;</span>,courseModel.name);</span><br></pre></td></tr></table></figure>
 
-<h1 id="最后总结"><a href="#最后总结" class="headerlink" title="最后总结"></a>最后总结</h1><img src="/2021/03/24/Runtime-Part2/1244124-6037157.png" class="" width="1244124">
+<h1 id="最后总结"><a href="#最后总结" class="headerlink" title="最后总结"></a>最后总结</h1><img src="/2021/11/02/Runtime-Part2/1244124-6037157.png" class="" width="1244124">
 
 <p>以上就是我们在实际开发中常用的Runtime的操作了，Runtime的强大作用远不止如此。深入的了解和学习Runtime，不仅仅有助于iOS开发，而且对于理解编程语言的底层原理也十分有用，Keep Learning！~</p>
 <p>参考链接：</p>
@@ -185,7 +185,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="blog.cfjia.cc/2021/03/24/Runtime-Part2/" data-id="ckvlr73y5000nut3q0d8f6cco" class="article-share-link">
+      <a data-url="blog.cfjia.cc/2021/11/02/Runtime-Part2/" data-id="ckvlraurk000nwh3qabdne24p" class="article-share-link">
         Share
       </a>
       
@@ -208,6 +208,11 @@
     </div>
   </a>
   
+  
+  <a href="/2021/11/01/Runtime-Part1/" class="article-nav-link">
+    <strong class="article-nav-caption">Older</strong>
+    <div class="article-nav-title"></div>
+  </a>
   
 </nav>
 
