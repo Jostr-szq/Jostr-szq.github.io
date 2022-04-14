@@ -67,7 +67,7 @@
     <h1 class="page-type-title"></h1>
     
     
-    <article id="post-Runloop" class="article article-type-post" itemscope
+    <article id="post-RunLoop-Part2" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
   <div class="article-inner">
@@ -76,7 +76,7 @@
       
 
 <h2 itemprop="name">
-  <a class="article-title" href="/2021/11/04/Runloop/">Runloop详解</a>
+  <a class="article-title" href="/2021/12/02/RunLoop-Part2/">RunLoop的应用</a>
 </h2>
 
 
@@ -86,8 +86,8 @@
 
     
     <div class="article-meta">
-      <a href="/2021/11/04/Runloop/" class="article-date">
-  <time datetime="2021-11-04T14:26:24.000Z" itemprop="datePublished">2021-11-04</time>
+      <a href="/2021/12/02/RunLoop-Part2/" class="article-date">
+  <time datetime="2021-12-02T02:10:44.000Z" itemprop="datePublished">2021-12-02</time>
 </a>
       
 <div class="article-category">
@@ -105,68 +105,102 @@
         
       
       
-      <p>原理：</p>
-<ol>
-<li><p>什么是Runloop?</p>
-<p>Runloop是一个调度任务和处理任务的事件循环。Runloop的目的是为了在有工作的时候让线程忙起来，而在没工作的时候让线程进入休眠状态。简单的说RunLoop是一种高级的循环机制，让程序持续运行，并处理程序中的各种事件，让线程在需要做事的时候忙起来，不需要的话就让线程休眠。</p>
-</li>
-<li><p>Runloop和线程？</p>
-<p>RunLoop<code>和线程是绑定在一起的，每条线程都有唯一一个与之对应的</code>RunLoop对象<code>。不能自己创建</code>RunLoop对象<code>，但是可以获取系统提供的</code>RunLoop对象<code>。主线程的</code>RunLoop对象<code>是由系统自动创建好的，在应用程序启动的时候会自动完成启动，而子线程中的</code>RunLoop对象`需要我们手动获取并启动。</p>
-<p>线程刚创建时并没有 RunLoop，如果你不主动获取，那它一直都不会有。RunLoop 的创建是发生在第一次获取时，RunLoop 的销毁是发生在线程结束时。你只能在一个线程的内部获取其 RunLoop（主线程除外）。</p>
-</li>
-<li><p>Runloop对外接口</p>
-<p>一个 RunLoop 包含若干个 Mode，每个 Mode 又包含若干个 Source/Timer/Observer。每次调用 RunLoop 的主函数时，只能指定其中一个 Mode，这个Mode被称作 CurrentMode。如果需要切换 Mode，只能退出 Loop，再重新指定一个 Mode 进入。这样做主要是为了分隔开不同组的 Source/Timer/Observer，让其互不影响。</p>
-<p>苹果文档中提到的 Mode 有五个，分别是：</p>
-<ul>
-<li>NSDefaultRunLoopMode</li>
-<li>NSConnectionReplyMode</li>
-<li>NSModalPanelRunLoopMode</li>
-<li>NSEventTrackingRunLoopMode</li>
-<li>NSRunLoopCommonModes</li>
-</ul>
-<p>iOS 中公开暴露出来的只有 NSDefaultRunLoopMode 和 NSRunLoopCommonModes。 NSRunLoopCommonModes 实际上是一个 Mode 的集合，默认包括 NSDefaultRunLoopMode 和 NSEventTrackingRunLoopMode。</p>
-<p>应用场景举例：主线程的 RunLoop 里有两个预置的 Mode：kCFRunLoopDefaultMode 和 UITrackingRunLoopMode。这两个 Mode 都已经被标记为”Common”属性。DefaultMode 是 App 平时所处的状态，TrackingRunLoopMode 是追踪 ScrollView 滑动时的状态。当你创建一个 Timer 并加到 DefaultMode 时，Timer 会得到重复回调，但此时滑动一个TableView时，RunLoop 会将 mode 切换为 TrackingRunLoopMode，这时 Timer 就不会被回调，并且也不会影响到滑动操作。</p>
-<p>有时你需要一个 Timer，在两个 Mode 中都能得到回调，一种办法就是将这个 Timer 分别加入这两个 Mode。还有一种方式，就是将 Timer 加入到顶层的 RunLoop 的 “commonModeItems” 中。”commonModeItems” 被 RunLoop 自动更新到所有具有”Common”属性的 Mode 里去。</p>
-</li>
-</ol>
-<p>实践</p>
-<ol>
-<li><p>AutoReleasePool</p>
-<p>App启动后，苹果在主线程 RunLoop 里注册了两个 Observer，其回调都是 _wrapRunLoopWithAutoreleasePoolHandler()。</p>
-<p>第一个 Observer 监视的事件是 Entry(即将进入Loop)，其回调内会调用 _objc_autoreleasePoolPush() 创建自动释放池。其 order 是-2147483647，优先级最高，保证创建释放池发生在其他所有回调之前。</p>
-<p>第二个 Observer 监视了两个事件： BeforeWaiting(准备进入休眠) 时调用_objc_autoreleasePoolPop() 和 _objc_autoreleasePoolPush() 释放旧的池并创建新池；Exit(即将退出Loop) 时调用 _objc_autoreleasePoolPop() 来释放自动释放池。这个 Observer 的 order 是 2147483647，优先级最低，保证其释放池子发生在其他所有回调之后。</p>
-<p>在主线程执行的代码，通常是写在诸如事件回调、Timer回调内的。这些回调会被 RunLoop 创建好的 AutoreleasePool 环绕着，所以不会出现内存泄漏，开发者也不必显示创建 Pool 了。</p>
-</li>
-<li><p>事件响应</p>
-<p>mack port -&gt; source1回调 -&gt;source0回调 将IOHIDEvent对象封装成UIEvent对象，并放入UIApplication的事件队列中，单例的 UIApplication 会从事件队列中取出触摸事件并传递给单例的 UIWindow 来处理，UIWindow 对象首先会使用 <code>hitTest:withEvent:</code>方法寻找此次 Touch 操作初始点所在的视图(View)，即需要将触摸事件传递给其处理的视图，这个过程称之为 hit-test view。</p>
-<p><code>hitTest:withEvent:</code>方法的处理流程如下:</p>
-<ul>
-<li>首先调用当前视图的 <code>pointInside:withEvent:</code> 方法判断触摸点是否在当前视图内；</li>
-<li>若返回 NO, 则 <code>hitTest:withEvent:</code> 返回 nil，若返回 YES, 则向当前视图的所有子视图 (subviews) 发送 <code>hitTest:withEvent:</code> 消息，所有子视图的遍历顺序是从最顶层视图一直到到最底层视图，即从 subviews 数组的末尾向前遍历，直到有子视图返回非空对象或者全部子视图遍历完毕；</li>
-<li>若第一次有子视图返回非空对象，则 <code>hitTest:withEvent:</code> 方法返回此对象，处理结束；</li>
-<li>如所有子视图都返回空，则 hitTest:withEvent: 方法返回自身 (self)。</li>
-</ul>
-</li>
-<li><p>NSTimer</p>
-<p>NSTimer 其实就是 CFRunLoopTimerRef，他们之间是 toll-free bridged 的。一个 NSTimer 注册到 RunLoop 后，RunLoop 会为其重复的时间点注册好事件。例如 10:00, 10:10, 10:20 这几个时间点。RunLoop为了节省资源，并不会在非常准确的时间点回调这个Timer。Timer 有个属性叫做 Tolerance (宽容度)，标示了当时间点到后，容许有多少最大误差。</p>
-<p>如果某个时间点被错过了，例如执行了一个很长的任务，则那个时间点的回调也会跳过去，不会延后执行。就比如等公交，如果 10:10 时我忙着玩手机错过了那个点的公交，那我只能等 10:20 这一趟了。</p>
-</li>
-<li><p>performSelecter</p>
-<p>当调用 NSObject 的 performSelecter:afterDelay: 后，实际上其内部会创建一个 Timer 并添加到当前线程的 RunLoop 中。所以如果当前线程没有 RunLoop，则这个方法会失效。</p>
-<p>当调用 performSelector:onThread: 时，实际上其会创建一个 Timer 加到对应的线程去，同样的，如果对应线程没有 RunLoop 该方法也会失效。</p>
-</li>
-<li><p>线程保活</p>
-</li>
-</ol>
-
+        <h1 id="一、RunLoop与线程"><a href="#一、RunLoop与线程" class="headerlink" title="一、RunLoop与线程"></a>一、RunLoop与线程</h1><h2 id="1-RunLoop与线程的关系"><a href="#1-RunLoop与线程的关系" class="headerlink" title="1. RunLoop与线程的关系"></a>1. RunLoop与线程的关系</h2><p>苹果官方文档中，<code>RunLoop</code>的相关介绍写在线程编程指南中，可见<code>RunLoop</code>和线程的关系不一般。<a href="https://link.juejin.cn/?target=https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html%23//apple_ref/doc/uid/10000057i-CH16-SW23">Threading Programming Guide（苹果官方文档）</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;&#x2F; 全局的Dictionary，key 是 pthread_t， value 是 CFRunLoopRef</span><br><span class="line">static CFMutableDictionaryRef loopsDic;</span><br><span class="line">&#x2F;&#x2F;&#x2F; 访问 loopsDic 时的锁</span><br><span class="line">static CFSpinLock_t loopsLock;</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F;&#x2F; 获取一个 pthread 对应的 RunLoop。</span><br><span class="line">CFRunLoopRef _CFRunLoopGet(pthread_t thread) &#123;</span><br><span class="line">    OSSpinLockLock(&amp;loopsLock);</span><br><span class="line">    </span><br><span class="line">    if (!loopsDic) &#123;</span><br><span class="line">        &#x2F;&#x2F; 第一次进入时，初始化全局Dic，并先为主线程创建一个 RunLoop。</span><br><span class="line">        loopsDic &#x3D; CFDictionaryCreateMutable();</span><br><span class="line">        CFRunLoopRef mainLoop &#x3D; _CFRunLoopCreate();</span><br><span class="line">        CFDictionarySetValue(loopsDic, pthread_main_thread_np(), mainLoop);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;&#x2F; 直接从 Dictionary 里获取。</span><br><span class="line">    CFRunLoopRef loop &#x3D; CFDictionaryGetValue(loopsDic, thread));</span><br><span class="line">    </span><br><span class="line">    if (!loop) &#123;</span><br><span class="line">        &#x2F;&#x2F;&#x2F; 取不到时，创建一个</span><br><span class="line">        loop &#x3D; _CFRunLoopCreate();</span><br><span class="line">        CFDictionarySetValue(loopsDic, thread, loop);</span><br><span class="line">        &#x2F;&#x2F;&#x2F; 注册一个回调，当线程销毁时，顺便也销毁其对应的 RunLoop。</span><br><span class="line">        _CFSetTSD(..., thread, loop, __CFFinalizeRunLoop);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    OSSpinLockUnLock(&amp;loopsLock);</span><br><span class="line">    return loop;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">CFRunLoopRef CFRunLoopGetMain() &#123;</span><br><span class="line">    return _CFRunLoopGet(pthread_main_thread_np());</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">CFRunLoopRef CFRunLoopGetCurrent() &#123;</span><br><span class="line">    return _CFRunLoopGet(pthread_self());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        
+          <p>
+            <a class="article-more-link" href="/2021/12/02/RunLoop-Part2/">
+              Read More...
+            </a>
+          </p>
+        
       
     </div>
     <footer class="article-footer">
-      <a data-url="blog.cfjia.cc/2021/11/04/Runloop/" data-id="ckvlu2lvn0001it3q3p99fg03" class="article-share-link">
+      <a data-url="blog.cfjia.cc/2021/12/02/RunLoop-Part2/" data-id="cl1z2o4b20001oq9k1dl1cg1k" class="article-share-link">
         Share
       </a>
       
-<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RunLoop/" rel="tag">RunLoop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/" rel="tag">iOS</a></li></ul>
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Runtime/" rel="tag">Runtime</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/" rel="tag">iOS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%9F%BA%E7%A1%80/" rel="tag">基础</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+    
+    <article id="post-RunLoop-Part1" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+      
+
+<h2 itemprop="name">
+  <a class="article-title" href="/2021/11/22/RunLoop-Part1/">RunLoop的原理</a>
+</h2>
+
+
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2021/11/22/RunLoop-Part1/" class="article-date">
+  <time datetime="2021-11-22T05:52:16.000Z" itemprop="datePublished">2021-11-22</time>
+</a>
+      
+<div class="article-category">
+  <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a> / <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/iOS%E8%BF%9B%E9%98%B6/">iOS进阶</a>
+</div>
+
+    </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+        
+      
+      
+        <h1 id="一、RunLoop概念"><a href="#一、RunLoop概念" class="headerlink" title="一、RunLoop概念"></a>一、RunLoop概念</h1><p>RunLoop，顾名思义其实就是一个循环，而通过这个循环能帮助我们理解以及解决什么问题就是我们值得思考的事情了。</p>
+<h3 id="事件循环"><a href="#事件循环" class="headerlink" title="事件循环"></a>事件循环</h3><ul>
+<li>没有消息需要处理时，休眠线程以避免资源占用。从用户态切换到内核态，等待消息；</li>
+<li>有消息需要处理时，立刻唤醒线程，回到用户态处理消息；</li>
+<li>通过调用mach_msg()函数来转移当前线程的控制权给内核态/用户态</li>
+</ul>
+<h3 id="RunLoop作用"><a href="#RunLoop作用" class="headerlink" title="RunLoop作用"></a>RunLoop作用</h3><ul>
+<li><p>保持程序的持续运行：</p>
+<p>如果没有RunLoop，main()函数一执行完，程序就会立刻退出。而我们的iOS程序能保持持续运行的原因就是在main()函数中调用了UIApplicationMain函数，这个函数内部会启动主线程的RunLoop;</p>
+</li>
+<li><p>处理App中的各种事件（比如触摸事件、定时器事件等）；</p>
+</li>
+<li><p>节省CPU资源，提高程序性能; </p>
+</li>
+</ul>
+        
+          <p>
+            <a class="article-more-link" href="/2021/11/22/RunLoop-Part1/">
+              Read More...
+            </a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="blog.cfjia.cc/2021/11/22/RunLoop-Part1/" data-id="cl1z2o4be000poq9ke79ph7ok" class="article-share-link">
+        Share
+      </a>
+      
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Runtime/" rel="tag">Runtime</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/" rel="tag">iOS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%9F%BA%E7%A1%80/" rel="tag">基础</a></li></ul>
 
     </footer>
 
@@ -231,7 +265,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="blog.cfjia.cc/2021/11/02/Runtime-Part2/" data-id="ckvlu2lvx000nit3qd2qtd6xl" class="article-share-link">
+      <a data-url="blog.cfjia.cc/2021/11/02/Runtime-Part2/" data-id="cl1z2o4bg000voq9k7dn1dc0t" class="article-share-link">
         Share
       </a>
       
@@ -301,7 +335,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="blog.cfjia.cc/2021/11/01/Runtime-Part1/" data-id="ckvlu2lvp0003it3qfnc7hifi" class="article-share-link">
+      <a data-url="blog.cfjia.cc/2021/11/01/Runtime-Part1/" data-id="cl1z2o4b50003oq9k2qhxgxd3" class="article-share-link">
         Share
       </a>
       
@@ -335,7 +369,7 @@
 </ul>
     </div>
     <ul class="list-inline">
-      <li>黑夜里的眸 &copy; 2021</li>
+      <li>黑夜里的眸 &copy; 2022</li>
       
         <li>ZHWANGART</li>
       
