@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  
+  <meta name="keywords" content="iOS">
+  
+  
+  <meta name="description" content="cfjia个人博客">
+  
+  <title>
+    iOS面试题 part 2 - 内存管理 |
+    
+    黑夜里的眸
+  </title>
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<script src="/js/pace.min.js"></script>
+
+<meta name="generator" content="Hexo 5.0.2"></head>
+
+<body>
+  <main class="content">
+    <section class="outer">
+  <article id="post-iOS面试题-2" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+      
+
+<h1 class="article-title" itemprop="name">
+  iOS面试题 part 2 - 内存管理
+</h1>
+
+
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2022/12/22/iOS%E9%9D%A2%E8%AF%95%E9%A2%98-2/" class="article-date">
+  <time datetime="2022-12-22T12:00:00.000Z" itemprop="datePublished">2022-12-22</time>
+</a>
+      
+<div class="article-category">
+  <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a> / <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/iOS%E8%BF%9B%E9%98%B6/">iOS进阶</a>
+</div>
+
+    </div>
+    
+
+    
+    
+<div class="tocbot"></div>
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+      
+      <h3 id="1-weak的实现原理？sideTable的结构是什么样的？"><a href="#1-weak的实现原理？sideTable的结构是什么样的？" class="headerlink" title="1. weak的实现原理？sideTable的结构是什么样的？"></a>1. weak的实现原理？sideTable的结构是什么样的？</h3><p>weak：其实是一个hash表结构，其中的key是所指对象的地址，value是weak的指针数组，weak表示的是弱引用，不会对对象引用计数+1，当引用的对象被释放的时候，其值被自动设置为nil，一般用于解决循环引用的。</p>
+<p>weak的实现原理<br>1、初始化时：runtime会调用objc_initWeak函数，初始化一个新的weak指针指向对象的地址。<br>2、添加引用时：objc_initWeak函数会调用 objc_storeWeak() 函数， objc_storeWeak() 的作用是更新指针指向，创建对应的弱引用表。3、释放时，调用clearDeallocating函数。clearDeallocating函数首先根据对象地址获取所有weak指针地址的数组，然后遍历这个数组把其中的数据设为nil，最后把这个entry从weak表中删除，最后清理对象的记录。</p>
+<p>SideTable的结构如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">struct SideTable &#123;</span><br><span class="line">&#x2F;&#x2F; 保证原子操作的自旋锁</span><br><span class="line">    spinlock_t slock;</span><br><span class="line">    &#x2F;&#x2F; 引用计数的 hash 表</span><br><span class="line">    RefcountMap refcnts;</span><br><span class="line">    &#x2F;&#x2F; weak 引用全局 hash 表</span><br><span class="line">    weak_table_t weak_table;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-关联对象的应用？系统如何实现关联对象的"><a href="#2-关联对象的应用？系统如何实现关联对象的" class="headerlink" title="2. 关联对象的应用？系统如何实现关联对象的"></a>2. 关联对象的应用？系统如何实现关联对象的</h3><p>应用：可以在不改变类的源码的情况下，为类添加实例变量（注意：这里指的实例变量，并不是真正的属于类的实例变量，而是一个关联值变量）结合category使用，为类扩展存储属性。</p>
+<p>关联对象实现原理：关联对象的值实际上是通过AssociationsManager对象负责管理的，这个对象里有个AssociationsHashMap静态表，用来存储对象的关联值的，关于AssociationsHashMap存储的数据结构如下：<br>AssociationsHashMap：<br>——添加属性对象的指针地址（key）：ObjectAssociationMap（value：所有关联值对象）<br>ObjectAssociationMap：<br>——关联值的key：关联值的value</p>
+<p>关联对象的应用和系统如何实现关联对象的大概顺序如下:<br><code>AssociationsManager</code>关联对象管理器-&gt;<code>AssociationsHashMap</code>哈希映射表-&gt;<code>ObjectAssociationMap</code>关联对象指针-&gt;<code>ObjcAssociation</code>关联对象</p>
+<h3 id="3-关联对象的如何进行内存管理的？关联对象如何实现weak属性"><a href="#3-关联对象的如何进行内存管理的？关联对象如何实现weak属性" class="headerlink" title="3. 关联对象的如何进行内存管理的？关联对象如何实现weak属性?"></a>3. 关联对象的如何进行内存管理的？关联对象如何实现weak属性?</h3><p>内存管理：<br>关联对象的ObjectAssociation中有两个属性(uintptr_t _policy, id value),<br>_policy 包含 retain, assgin copy, 会对应的对对象进行和普通对象一样的内存管理操作.</p>
+<p>weak属性:</p>
+<ol>
+<li>实现weak,用__weak修饰对象,并将其用block包裹,关联时,关联block对象</li>
+<li>额外创造一个类WeakObjectContainer，在这个类里实现weak属性 weakObject ，虽然 分类里 retain 了一个 WeakObjectContainer，但是 WeakObjectContainer 最终会随着属性的持有对象一起销毁，不存在泄露。</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="blog.cfjia.cc/2022/12/22/iOS%E9%9D%A2%E8%AF%95%E9%A2%98-2/" data-id="clcpq1v1t00031vji5dml5amx" class="article-share-link">
+        Share
+      </a>
+      
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Runtime/" rel="tag">Runtime</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/" rel="tag">iOS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%9F%BA%E7%A1%80/" rel="tag">基础</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+  
+<nav class="article-nav">
+  
+  
+  <a href="/2022/12/21/iOS%E9%9D%A2%E8%AF%95%E9%A2%98-1/" class="article-nav-link">
+    <strong class="article-nav-caption">Older</strong>
+    <div class="article-nav-title">iOS面试题 part 1 - Runtime 内存结构</div>
+  </a>
+  
+</nav>
+
+  
+
+  
+  
+  
+  
+
+</article>
+</section>
+    <footer class="footer">
+  <div class="outer">
+    <div class="float-right">
+      <ul class="list-inline">
+  
+  <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+  <li><i class="fe fe-bookmark"></i> <span id="busuanzi_value_page_pv"></span></li>
+  
+</ul>
+    </div>
+    <ul class="list-inline">
+      <li>黑夜里的眸 &copy; 2023</li>
+      
+        <li>ZHWANGART</li>
+      
+      <li>Powered by <a href="http://hexo.io/" target="_blank">Hexo</a></li>
+      <li>theme  <a target="_blank" rel="noopener" href="https://github.com/zhwangart/hexo-theme-ocean">Ocean</a></li>
+    </ul>
+  </div>
+</footer>
+  </main>
+  <aside class="sidebar">
+    <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/hexo.svg" alt="黑夜里的眸"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">Home</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">Archives</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/gallery">Gallery</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/favorites">Favorites</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">About</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="Search">
+        <i class="fe fe-search"></i>
+        Search
+      </a>
+    </li>
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      <div class="totop" id="totop">
+  <i class="fe fe-rocket"></i>
+</div>
+    </li>
+    <li class="nav-item">
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="fe fe-feed"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+  </aside>
+  
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/copybtn.js"></script>
+
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto',
+  });
+</script>
+
+
+
+<script src="/js/ocean.js"></script>
+
+</body>
+
+</html>
