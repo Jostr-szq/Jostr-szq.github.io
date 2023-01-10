@@ -16,15 +16,15 @@
   <meta name="author" content="cfjia">
   <meta name="keywords" content="iOS">
   
-    <meta name="description" content="1. 介绍下runtime的内存模型(isa，对象，类，metaclass，结构体的存储信息等)对象：OC中的对象指向的是一个objc_object指针类型，typedef struct objc_object *id；从它的结构体中可以看出，它包含一个isa指针，指向的是这个对象的类对象。一个对象的实例就是通过isa指针找到它自己的class，而这个class中存储的就是这个实例的方法列表，属性">
+    <meta name="description" content="Runtime-内存结构">
 <meta property="og:type" content="article">
-<meta property="og:title" content="iOS面试题 part 1 - Runtime 内存结构">
+<meta property="og:title" content="iOS面试题-Part1">
 <meta property="og:url" content="blog.cfjia.cc/2022/12/21/iOS%E9%9D%A2%E8%AF%95%E9%A2%98-1/index.html">
 <meta property="og:site_name" content="黑夜里的眸">
-<meta property="og:description" content="1. 介绍下runtime的内存模型(isa，对象，类，metaclass，结构体的存储信息等)对象：OC中的对象指向的是一个objc_object指针类型，typedef struct objc_object *id；从它的结构体中可以看出，它包含一个isa指针，指向的是这个对象的类对象。一个对象的实例就是通过isa指针找到它自己的class，而这个class中存储的就是这个实例的方法列表，属性">
+<meta property="og:description" content="Runtime-内存结构">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-12-21T12:00:00.000Z">
-<meta property="article:modified_time" content="2023-01-10T05:56:06.919Z">
+<meta property="article:modified_time" content="2023-01-10T06:42:02.669Z">
 <meta property="article:author" content="cfjia">
 <meta property="article:tag" content="iOS">
 <meta property="article:tag" content="Runtime">
@@ -33,7 +33,7 @@
   
   
   
-  <title>iOS面试题 part 1 - Runtime 内存结构 - 黑夜里的眸</title>
+  <title>iOS面试题-Part1 - 黑夜里的眸</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -199,7 +199,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="iOS面试题 part 1 - Runtime 内存结构"></span>
+            <span id="subtitle" data-typed-text="iOS面试题-Part1"></span>
           
         </div>
 
@@ -271,7 +271,7 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">iOS面试题 part 1 - Runtime 内存结构</h1>
+            <h1 style="display: none">iOS面试题-Part1</h1>
             
             
               <div class="markdown-body">
@@ -403,7 +403,7 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>iOS面试题 part 1 - Runtime 内存结构</div>
+      <div>iOS面试题-Part1</div>
       <div>blog.cfjia.cc/2022/12/21/iOS面试题-1/</div>
     </div>
     <div class="license-meta">
@@ -448,9 +448,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/12/22/iOS%E9%9D%A2%E8%AF%95%E9%A2%98-2/" title="iOS面试题 part 2 - 内存管理">
+                      <a href="/2022/12/22/iOS%E9%9D%A2%E8%AF%95%E9%A2%98-2/" title="iOS面试题-Part2">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">iOS面试题 part 2 - 内存管理</span>
+                        <span class="hidden-mobile">iOS面试题-Part2</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -458,8 +458,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/03/22/iOS%E6%9E%B6%E6%9E%84%20-%20%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88%20(2)/" title="iOS架构 - 组件化方案 (2)">
-                        <span class="hidden-mobile">iOS架构 - 组件化方案 (2)</span>
+                      <a href="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part2/" title="iOS组件化方案-Part2">
+                        <span class="hidden-mobile">iOS组件化方案-Part2</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

@@ -228,14 +228,14 @@
       <h1 class="index-header">
         
         <a href="/2022/12/22/iOS%E9%9D%A2%E8%AF%95%E9%A2%98-2/" target="_self">
-          iOS面试题 part 2 - 内存管理
+          iOS面试题-Part2
         </a>
       </h1>
 
       
       <a class="index-excerpt index-excerpt__noimg" href="/2022/12/22/iOS%E9%9D%A2%E8%AF%95%E9%A2%98-2/" target="_self">
         <div>
-          1. weak的实现原理？sideTable的结构是什么样的？weak：其实是一个hash表结构，其中的key是所指对象的地址，value是weak的指针数组，weak表示的是弱引用，不会对对象引用计数+1，当引用的对象被释放的时候，其值被自动设置为nil，一般用于解决循环引用的。 weak的实现原理1、初始化时：runtime会调用objc_initWeak函数，初始化一个新的weak指针指向对
+          内存管理
         </div>
       </a>
 
@@ -300,14 +300,14 @@
       <h1 class="index-header">
         
         <a href="/2022/12/21/iOS%E9%9D%A2%E8%AF%95%E9%A2%98-1/" target="_self">
-          iOS面试题 part 1 - Runtime 内存结构
+          iOS面试题-Part1
         </a>
       </h1>
 
       
       <a class="index-excerpt index-excerpt__noimg" href="/2022/12/21/iOS%E9%9D%A2%E8%AF%95%E9%A2%98-1/" target="_self">
         <div>
-          1. 介绍下runtime的内存模型(isa，对象，类，metaclass，结构体的存储信息等)对象：OC中的对象指向的是一个objc_object指针类型，typedef struct objc_object *id；从它的结构体中可以看出，它包含一个isa指针，指向的是这个对象的类对象。一个对象的实例就是通过isa指针找到它自己的class，而这个class中存储的就是这个实例的方法列表，属性
+          Runtime-内存结构
         </div>
       </a>
 
@@ -371,13 +371,13 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2022/03/22/iOS%E6%9E%B6%E6%9E%84%20-%20%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88%20(2)/" target="_self">
-          iOS架构 - 组件化方案 (2)
+        <a href="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part2/" target="_self">
+          iOS组件化方案-Part2
         </a>
       </h1>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2022/03/22/iOS%E6%9E%B6%E6%9E%84%20-%20%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88%20(2)/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part2/" target="_self">
         <div>
           组件化通讯方案目前主流的主要有以下三种方式：  1、URL路由 2、target-action 3、protocol匹配  URL路由目前iOS上大部分路由工具都是基于URL匹配的，或者是根据命名约定，用runtime方法进行动态调用 这些动态化的方案的优点是实现简单，缺点是需要维护字符串表，或者依赖于命名约定，无法在编译时暴露出所有问题，需要在运行时才能发现错误。 URL路由方式主要是以蘑菇街为
         </div>
@@ -443,13 +443,13 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2022/03/22/iOS%E6%9E%B6%E6%9E%84%20-%20%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88%20(1)/" target="_self">
-          iOS架构 - 组件化方案 (1)
+        <a href="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/" target="_self">
+          iOS组件化方案-Part1
         </a>
       </h1>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2022/03/22/iOS%E6%9E%B6%E6%9E%84%20-%20%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88%20(1)/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/" target="_self">
         <div>
           组件化组件化其实就是将模块单独抽离、分层，并指定模块间的通讯方式，从而实现解耦的一种方式，主要运用与团队开发 为什么需要组件化？主要有以下四个原因  1、模块间解耦 2、模块重用 3、提高团队协作开发效率 4、单元测试  当项目因为各种需求，越来越来时，如果此时的各个模块之间是互相调用，即你中有我，我中有你这种情况时，会造成高耦合的情况。一旦我们需要对某一块代码进行修改时，就会牵一发而动全身，导致
         </div>

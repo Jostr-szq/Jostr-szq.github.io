@@ -18,22 +18,36 @@
   
     <meta name="description" content="组件化组件化其实就是将模块单独抽离、分层，并指定模块间的通讯方式，从而实现解耦的一种方式，主要运用与团队开发 为什么需要组件化？主要有以下四个原因  1、模块间解耦 2、模块重用 3、提高团队协作开发效率 4、单元测试  当项目因为各种需求，越来越来时，如果此时的各个模块之间是互相调用，即你中有我，我中有你这种情况时，会造成高耦合的情况。一旦我们需要对某一块代码进行修改时，就会牵一发而动全身，导致">
 <meta property="og:type" content="article">
-<meta property="og:title" content="iOS架构 - 组件化方案 (1)">
-<meta property="og:url" content="blog.cfjia.cc/2022/03/22/iOS%E6%9E%B6%E6%9E%84%20-%20%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88%20(1)/index.html">
+<meta property="og:title" content="iOS组件化方案-Part1">
+<meta property="og:url" content="blog.cfjia.cc/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/index.html">
 <meta property="og:site_name" content="黑夜里的眸">
 <meta property="og:description" content="组件化组件化其实就是将模块单独抽离、分层，并指定模块间的通讯方式，从而实现解耦的一种方式，主要运用与团队开发 为什么需要组件化？主要有以下四个原因  1、模块间解耦 2、模块重用 3、提高团队协作开发效率 4、单元测试  当项目因为各种需求，越来越来时，如果此时的各个模块之间是互相调用，即你中有我，我中有你这种情况时，会造成高耦合的情况。一旦我们需要对某一块代码进行修改时，就会牵一发而动全身，导致">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/d45435499bcd48d69596779b778e2b39.png">
+<meta property="og:image" content="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/d411eb30e54b48faa116bde3c19dd158.png">
+<meta property="og:image" content="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/abbca02925474c55ac37f24181eb711b.png">
+<meta property="og:image" content="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/6e8b46b343d14fc4966346a3eb3734b1.png">
+<meta property="og:image" content="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/57123daa0cf14b7d9c4878ed22645786.png">
+<meta property="og:image" content="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/cd442535e97c43e880a4a8e743df2f92.png">
+<meta property="og:image" content="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/dc187aeebe7e457bbd5440e924d005b4.png">
+<meta property="og:image" content="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/36ce602f6cd04273831cd6ddafae8874.png">
+<meta property="og:image" content="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/ddb88b2f9adb401abe5f6e259cf8bf0d.png">
+<meta property="og:image" content="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/a9afd9886f6b49919a262e3f893e6fc8.png">
+<meta property="og:image" content="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/5565cf790f424ae58611554ee82710a0.png">
+<meta property="og:image" content="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/444cac4f432a471d87197d9ff4be77a5.png">
+<meta property="og:image" content="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/c66728c4363547cf87afd5817637a90b.png">
 <meta property="article:published_time" content="2022-03-22T05:52:16.000Z">
-<meta property="article:modified_time" content="2023-01-10T05:56:35.809Z">
+<meta property="article:modified_time" content="2023-01-10T06:37:49.213Z">
 <meta property="article:author" content="cfjia">
 <meta property="article:tag" content="iOS">
 <meta property="article:tag" content="架构">
 <meta property="article:tag" content="组件化">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/d45435499bcd48d69596779b778e2b39.png">
   
   
   
-  <title>iOS架构 - 组件化方案 (1) - 黑夜里的眸</title>
+  <title>iOS组件化方案-Part1 - 黑夜里的眸</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -199,7 +213,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="iOS架构 - 组件化方案 (1)"></span>
+            <span id="subtitle" data-typed-text="iOS组件化方案-Part1"></span>
           
         </div>
 
@@ -222,7 +236,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          5.8k 字
+          5k 字
         
       </span>
     
@@ -233,7 +247,7 @@
         
         
         
-          49 分钟
+          42 分钟
         
       </span>
     
@@ -271,7 +285,7 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">iOS架构 - 组件化方案 (1)</h1>
+            <h1 style="display: none">iOS组件化方案-Part1</h1>
             
             
               <div class="markdown-body">
@@ -323,7 +337,8 @@
 </ul>
 <p>前4条主要用于<code>衡量一个模块是否真正解耦</code>，后4条主要用于衡量在项目中<code>实践中的易用程度</code></p>
 <h4 id="组件化原则"><a href="#组件化原则" class="headerlink" title="组件化原则"></a>组件化原则</h4><p>一个项目主要分为3层：<code>业务层</code>、<code>通用层</code>以及<code>基础层</code>，在进行组件化时，有以下几点说明</p>
-<p>![image.png](iOS架构 - 组件化方案 (1)/d45435499bcd48d69596779b778e2b39.png)</p>
+<img src="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/d45435499bcd48d69596779b778e2b39.png" srcset="/img/loading.gif" lazyload class="" title="image.png">
+
 <ul>
 <li>只能上层对依赖，不能下层对上层的依赖，因为下层是对上层的抽象</li>
 <li>项目公共代码资源下沉</li>
@@ -338,7 +353,8 @@
 <h3 id="本地组件化"><a href="#本地组件化" class="headerlink" title="本地组件化"></a>本地组件化</h3><h4 id="1、创建主工程"><a href="#1、创建主工程" class="headerlink" title="1、创建主工程"></a>1、创建主工程</h4><ul>
 <li>首先创建一个工程</li>
 </ul>
-<p>![image.png](iOS架构 - 组件化方案 (1)/d411eb30e54b48faa116bde3c19dd158.png)</p>
+<img src="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/d411eb30e54b48faa116bde3c19dd158.png" srcset="/img/loading.gif" lazyload class="" title="image.png">
+
 <ul>
 <li>集成cocopods，进行本地管理：</li>
 </ul>
@@ -356,32 +372,45 @@
 <li><code>Pods</code>：三方依赖</li>
 </ul>
 <p>其中，各个模块间的关系如下所示</p>
-<p>![image.png](iOS架构 - 组件化方案 (1)/abbca02925474c55ac37f24181eb711b.png)</p>
+<img src="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/abbca02925474c55ac37f24181eb711b.png" srcset="/img/loading.gif" lazyload class="" title="image.png">
+
 <p>下面，我们来进行模块的创建，以<code>Core</code>模块为例：</p>
 <ul>
-<li>选择<code>new -&gt; project -&gt; iOS -&gt; Framework</code>，新建一个模块<br>![image.png](iOS架构 - 组件化方案 (1)/6e8b46b343d14fc4966346a3eb3734b1.png)选择正确的<code>Group</code> 和 <code>WorkSpace</code>（这里需要注意一点：创建的<code>library</code>最好放在<code>主工程根目录</code>下，否则后续<code>podfile</code>执行<code>pod install</code>时会报错）</li>
+<li>选择<code>new -&gt; project -&gt; iOS -&gt; Framework</code>，新建一个模块<img src="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/6e8b46b343d14fc4966346a3eb3734b1.png" srcset="/img/loading.gif" lazyload class="" title="image.png">选择正确的`Group` 和 `WorkSpace`（这里需要注意一点：创建的`library`最好放在`主工程根目录`下，否则后续`podfile`执行`pod install`时会报错）
+
+</li>
 </ul>
-<p>![image.png](iOS架构 - 组件化方案 (1)/57123daa0cf14b7d9c4878ed22645786.png)</p>
+<img src="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/57123daa0cf14b7d9c4878ed22645786.png" srcset="/img/loading.gif" lazyload class="" title="image.png">
+
 <p>将创建的<code>library</code>的<code>Build Settings -&gt; Mach-O Type</code>修改为静态库 <code>Static Library</code></p>
-<p>![image.png](iOS架构 - 组件化方案 (1)/cd442535e97c43e880a4a8e743df2f92.png)</p>
+<img src="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/cd442535e97c43e880a4a8e743df2f92.png" srcset="/img/loading.gif" lazyload class="" title="image.png">
+
 <h4 id="3、主工程调用library"><a href="#3、主工程调用library" class="headerlink" title="3、主工程调用library"></a>3、主工程调用library</h4><ul>
 <li>在CJLCore中新建一个文件，并添加如下代码</li>
 </ul>
 <figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs angelscript"><span class="hljs-comment">//类需要声明为public</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-symbol">CJLCoreSetting: <span class="hljs-symbol">NSObject</span></span> &#123;<br>    <span class="hljs-comment">//属性需要声明为public</span><br>    <span class="hljs-keyword">public</span> static let SCRET_KEY = <span class="hljs-string">&quot;SCRET_KEY&quot;</span><br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>在<code>Build Phases -&gt; Headers -&gt; Public</code>中将新建的文件添加为public，这样主工程才能访问该文件</p>
-<p>![image.png](iOS架构 - 组件化方案 (1)/dc187aeebe7e457bbd5440e924d005b4.png)</p>
+<img src="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/dc187aeebe7e457bbd5440e924d005b4.png" srcset="/img/loading.gif" lazyload class="" title="image.png">
+
 <p>在主工程中，选择<code>target -&gt; Linked Frameworks Library</code>中添加<code>CJLCore</code>，只需要build主工程，library能够自动联编</p>
-<p>![image.png](iOS架构 - 组件化方案 (1)/36ce602f6cd04273831cd6ddafae8874.png)</p>
+<img src="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/36ce602f6cd04273831cd6ddafae8874.png" srcset="/img/loading.gif" lazyload class="" title="image.png">
+
+
+
 <h4 id="4、使用"><a href="#4、使用" class="headerlink" title="4、使用"></a>4、使用</h4><p>首先<code>import CJLCore</code>，然后使用</p>
-<p>![image.png](iOS架构 - 组件化方案 (1)/ddb88b2f9adb401abe5f6e259cf8bf0d.png)</p>
+<img src="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/ddb88b2f9adb401abe5f6e259cf8bf0d.png" srcset="/img/loading.gif" lazyload class="" title="image.png">
+
 <p>这里需要注意的是，子library之间的互相调用，与主工程调用library类似，主需要添加依赖、暴露header即可</p>
 <h4 id="5、使用cocoapods管理三方依赖"><a href="#5、使用cocoapods管理三方依赖" class="headerlink" title="5、使用cocoapods管理三方依赖"></a>5、使用cocoapods管理三方依赖</h4><p>假设我们需要在<code>CJLCore</code>中封装网络层代码，需要用到三方库<code>Alamofire</code>，在podfile中</p>
 <figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><code class="hljs clean">platform :ios, <span class="hljs-string">&#x27;9.0&#x27;</span><br>inhibit_all_warnings!<br>use_frameworks!<br><br>#配置workspace路径<br>workspace <span class="hljs-string">&#x27;Modularization.xcworkspace&#x27;</span><br><br>################# 三方依赖<br># 公有<br>def workspace_pods<br>  pod <span class="hljs-string">&#x27;SwiftyJSON&#x27;</span><br>end<br><br># 主工程<br>def project_only_pods<br>  pod <span class="hljs-string">&#x27;SnapKit&#x27;</span><br>end<br><br>#网络<br>def network_layer_pods<br>  pod <span class="hljs-string">&#x27;Alamofire&#x27;</span><br>end<br><br>################# 模块<br>target <span class="hljs-string">&#x27;CJLCore&#x27;</span> do<br>  #配置libray路径<br>  project <span class="hljs-string">&#x27;CJLCore/CJLCore.xcodeproj&#x27;</span><br>  <br>  workspace_pods<br>  network_layer_pods<br><br>end<br><br>################# 主工程<br>target <span class="hljs-string">&#x27;Modularization&#x27;</span> do<br>  <br>  workspace_pods<br>  project_only_pods<br>  network_layer_pods<br><br>  target <span class="hljs-string">&#x27;ModularizationTests&#x27;</span> do<br>    inherit! :search_paths<br><br>  end<br><br>  target <span class="hljs-string">&#x27;ModularizationUITests&#x27;</span> do<br><br>  end<br><br>end<br></code></pre></td></tr></table></figure>
 
 <p>到此，一个本地组件化的模块就配置完成了</p>
 <h3 id="cocoapods组件化"><a href="#cocoapods组件化" class="headerlink" title="cocoapods组件化"></a>cocoapods组件化</h3><p>除了本地组件化，还可以使用<code>cocoapods</code>，其原理如下图所示</p>
-<p>![image.png](iOS架构 - 组件化方案 (1)/a9afd9886f6b49919a262e3f893e6fc8.png)这里还是以本地组件化中的结构为例</p>
+<img src="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/a9afd9886f6b49919a262e3f893e6fc8.png" srcset="/img/loading.gif" lazyload class="" title="image.png">这里还是以本地组件化中的结构为例
+
+
+
 <h4 id="1、创建私有仓库"><a href="#1、创建私有仓库" class="headerlink" title="1、创建私有仓库"></a>1、创建私有仓库</h4><ul>
 <li>在github上创建一个MySpecs仓库<br>具体步骤：登录github–&gt;点击右上角“+”–&gt;选择 new repository–&gt;输入Repository name为MySpecs，选择仓库类型为 private，点击Create repository。</li>
 <li>将私有仓库添加至本地<code>~/.cocoapods/repos</code>目录</li>
@@ -396,11 +425,16 @@
 <figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs crystal">pod <span class="hljs-class"><span class="hljs-keyword">lib</span> <span class="hljs-title">create</span> <span class="hljs-title">CJLServices</span></span><br></code></pre></td></tr></table></figure>
 
 <p>根据提示依次输入：ios、swift、yes、none、no、CJL</p>
-<p>![image.png](iOS架构 - 组件化方案 (1)/5565cf790f424ae58611554ee82710a0.png)</p>
+<img src="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/5565cf790f424ae58611554ee82710a0.png" srcset="/img/loading.gif" lazyload class="" title="image.png">
+
 <p>进入模块的目录，将文件拷贝至<code>CJLServices -&gt; Classes</code>中</p>
-<p>![image.png](iOS架构 - 组件化方案 (1)/444cac4f432a471d87197d9ff4be77a5.png)</p>
+<img src="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/444cac4f432a471d87197d9ff4be77a5.png" srcset="/img/loading.gif" lazyload class="" title="image.png">
+
 <p>执行<code>pod install</code>,会将Classes更新至pods中</p>
-<p>![image.png](iOS架构 - 组件化方案 (1)/c66728c4363547cf87afd5817637a90b.png)</p>
+<img src="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/c66728c4363547cf87afd5817637a90b.png" srcset="/img/loading.gif" lazyload class="" title="image.png">
+
+
+
 <p>执行结果</p>
 <h4 id="3、配置pods工程"><a href="#3、配置pods工程" class="headerlink" title="3、配置pods工程"></a>3、配置pods工程</h4><p>修改模块的配置文件，即<code>CJLServices.podspec</code></p>
 <ul>
@@ -513,8 +547,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>iOS架构 - 组件化方案 (1)</div>
-      <div>blog.cfjia.cc/2022/03/22/iOS架构 - 组件化方案 (1)/</div>
+      <div>iOS组件化方案-Part1</div>
+      <div>blog.cfjia.cc/2022/03/22/iOS组件化方案-Part1/</div>
     </div>
     <div class="license-meta">
       
@@ -558,9 +592,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/03/22/iOS%E6%9E%B6%E6%9E%84%20-%20%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88%20(2)/" title="iOS架构 - 组件化方案 (2)">
+                      <a href="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part2/" title="iOS组件化方案-Part2">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">iOS架构 - 组件化方案 (2)</span>
+                        <span class="hidden-mobile">iOS组件化方案-Part2</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     

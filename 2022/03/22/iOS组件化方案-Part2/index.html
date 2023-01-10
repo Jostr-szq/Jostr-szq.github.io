@@ -18,22 +18,28 @@
   
     <meta name="description" content="组件化通讯方案目前主流的主要有以下三种方式：  1、URL路由 2、target-action 3、protocol匹配  URL路由目前iOS上大部分路由工具都是基于URL匹配的，或者是根据命名约定，用runtime方法进行动态调用 这些动态化的方案的优点是实现简单，缺点是需要维护字符串表，或者依赖于命名约定，无法在编译时暴露出所有问题，需要在运行时才能发现错误。 URL路由方式主要是以蘑菇街为">
 <meta property="og:type" content="article">
-<meta property="og:title" content="iOS架构 - 组件化方案 (2)">
-<meta property="og:url" content="blog.cfjia.cc/2022/03/22/iOS%E6%9E%B6%E6%9E%84%20-%20%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88%20(2)/index.html">
+<meta property="og:title" content="iOS组件化方案-Part2">
+<meta property="og:url" content="blog.cfjia.cc/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part2/index.html">
 <meta property="og:site_name" content="黑夜里的眸">
 <meta property="og:description" content="组件化通讯方案目前主流的主要有以下三种方式：  1、URL路由 2、target-action 3、protocol匹配  URL路由目前iOS上大部分路由工具都是基于URL匹配的，或者是根据命名约定，用runtime方法进行动态调用 这些动态化的方案的优点是实现简单，缺点是需要维护字符串表，或者依赖于命名约定，无法在编译时暴露出所有问题，需要在运行时才能发现错误。 URL路由方式主要是以蘑菇街为">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part2/d74f03f0de964014923b74a6d4b9c5d3.png">
+<meta property="og:image" content="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part2/00203bd5fb6f4b58ae880570cd684117.png">
+<meta property="og:image" content="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part2/457cc2e7bd1345e58e5ee7aa63e94df5.png">
+<meta property="og:image" content="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part2/4dff469e37654d99b9c051fd7aafbad4.png">
+<meta property="og:image" content="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part2/4df6cb91860d497cbd80e60c033dae9c.png">
 <meta property="article:published_time" content="2022-03-22T06:52:16.000Z">
-<meta property="article:modified_time" content="2023-01-10T05:56:43.127Z">
+<meta property="article:modified_time" content="2023-01-10T06:37:33.721Z">
 <meta property="article:author" content="cfjia">
 <meta property="article:tag" content="iOS">
 <meta property="article:tag" content="架构">
 <meta property="article:tag" content="组件化">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part2/d74f03f0de964014923b74a6d4b9c5d3.png">
   
   
   
-  <title>iOS架构 - 组件化方案 (2) - 黑夜里的眸</title>
+  <title>iOS组件化方案-Part2 - 黑夜里的眸</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -199,7 +205,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="iOS架构 - 组件化方案 (2)"></span>
+            <span id="subtitle" data-typed-text="iOS组件化方案-Part2"></span>
           
         </div>
 
@@ -233,7 +239,7 @@
         
         
         
-          168 分钟
+          165 分钟
         
       </span>
     
@@ -271,7 +277,7 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">iOS架构 - 组件化方案 (2)</h1>
+            <h1 style="display: none">iOS组件化方案-Part2</h1>
             
             
               <div class="markdown-body">
@@ -324,7 +330,8 @@
 <figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs swift"><span class="hljs-comment">//******* 1、分类定义新接口</span><br><span class="hljs-class"><span class="hljs-keyword">extension</span> <span class="hljs-title">CTMediator</span></span>&#123;<br>    <span class="hljs-meta">@objc</span> <span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">A_showHome</span><span class="hljs-params">()</span></span>-&gt;<span class="hljs-type">UIViewController?</span>&#123;<br>        <span class="hljs-keyword">let</span> params = [<br>            kCTMediatorParamsKeySwiftTargetModuleName: <span class="hljs-string">&quot;CJLBase_Example&quot;</span><br>        ]<br>        <br>        <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> vc = <span class="hljs-keyword">self</span>.performTarget(<span class="hljs-string">&quot;A&quot;</span>, action: <span class="hljs-string">&quot;Extension_HomeViewController&quot;</span>, params: params, shouldCacheTarget: <span class="hljs-literal">false</span>) <span class="hljs-keyword">as</span>? <span class="hljs-type">UIViewController</span>&#123;<br>            <span class="hljs-keyword">return</span> vc<br>        &#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span><br>    &#125;<br>&#125;<br><br><span class="hljs-comment">//******* 2、模块提供者提供target-action的调用方式（对外需要加上public关键字）</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Target_A</span>: <span class="hljs-title">NSObject</span> </span>&#123;<br>    <br>    <span class="hljs-meta">@objc</span> <span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Action_Extension_HomeViewController</span><span class="hljs-params">(<span class="hljs-number">_</span> params: [String: <span class="hljs-keyword">Any</span>])</span></span>-&gt;<span class="hljs-type">UIViewController</span>&#123;<br>         <br>        <span class="hljs-keyword">let</span> home = <span class="hljs-type">HomeViewController</span>()<br>        <span class="hljs-keyword">return</span> home<br>    &#125;<br><br>&#125;<br><br><span class="hljs-comment">//******* 3、使用</span><br><span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> vc = <span class="hljs-type">CTMediator</span>.sharedInstance().<span class="hljs-type">A_showHome</span>() &#123;<br>            <span class="hljs-keyword">self</span>.navigationController?.pushViewController(vc, animated: <span class="hljs-literal">true</span>)<br>        &#125;<br></code></pre></td></tr></table></figure>
 
 <p>其模块间的引用关系如下图所示</p>
-<p>![image.png](iOS架构 - 组件化方案 (2)/d74f03f0de964014923b74a6d4b9c5d3.png)</p>
+<img src="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part2/d74f03f0de964014923b74a6d4b9c5d3.png" srcset="/img/loading.gif" lazyload class="" title="image.png">
+
 <p><strong>优点</strong></p>
 <p>**<br>**</p>
 <ul>
@@ -408,7 +415,8 @@
 <figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">[<span class="hljs-keyword">BHContext </span><span class="hljs-keyword">shareInstance].moduleConfigName </span>= @<span class="hljs-string">&quot;BeeHive.bundle/BeeHive&quot;</span><span class="hljs-comment">;//可选，默认为BeeHive.bundle/BeeHive.plist</span><br></code></pre></td></tr></table></figure>
 
 <p>创建plist文件，<code>Plist</code>文件的格式也是数组中包含多个字典。字典里面有两个Key，一个是<code>@&quot;moduleLevel&quot;</code>，另一个是<code>@&quot;moduleClass&quot;</code>。注意<code>根</code>的数组的名字叫<code>@“moduleClasses”</code>。</p>
-<p>![image.png](iOS架构 - 组件化方案 (2)/00203bd5fb6f4b58ae880570cd684117.png)</p>
+<img src="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part2/00203bd5fb6f4b58ae880570cd684117.png" srcset="/img/loading.gif" lazyload class="" title="image.png">
+
 <ul>
 <li>进入<code>loadLocalModules</code>方法，主要是从<code>Plist</code>里面取出数组，然后把数组加入到<code>BHModuleInfos</code>数组里面。</li>
 </ul>
@@ -437,13 +445,16 @@
 
 <p>主要分为三种</p>
 <ul>
-<li>1、<code>系统事件</code>：主要是指<code>Application生命周期事件</code>!<br>![image.png](iOS架构 - 组件化方案 (2)/457cc2e7bd1345e58e5ee7aa63e94df5.png)</li>
+<li>1、<code>系统事件</code>：主要是指<code>Application生命周期事件</code>!<img src="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part2/457cc2e7bd1345e58e5ee7aa63e94df5.png" srcset="/img/loading.gif" lazyload class="" title="image.png">
+
+</li>
 </ul>
 <p>一般的做法是<code>AppDelegate</code>改为<code>继承自BHAppDelegate</code></p>
 <figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs angelscript">@<span class="hljs-keyword">interface</span> <span class="hljs-symbol">TestAppDelegate</span> : <span class="hljs-symbol">BHAppDelegate</span> &lt;<span class="hljs-symbol">UIApplicationDelegate</span>&gt;<br></code></pre></td></tr></table></figure>
 
 <p>2、<code>应用事件</code>：官方给出的流程图，其中<code>modSetup</code>、<code>modInit</code>等，可以用于编码实现各插件模块的设置与初始化。</p>
-<p>![image.png](iOS架构 - 组件化方案 (2)/4dff469e37654d99b9c051fd7aafbad4.png)</p>
+<img src="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part2/4dff469e37654d99b9c051fd7aafbad4.png" srcset="/img/loading.gif" lazyload class="" title="image.png">
+
 <ul>
 <li>3、<code>自定义事件</code></li>
 </ul>
@@ -468,7 +479,8 @@
 <figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">[<span class="hljs-keyword">BHContext </span><span class="hljs-keyword">shareInstance].serviceConfigName </span>= @<span class="hljs-string">&quot;BeeHive.bundle/BHService&quot;</span>;<br></code></pre></td></tr></table></figure>
 
 <p>设置plist文件</p>
-<p>![image.png](iOS架构 - 组件化方案 (2)/4df6cb91860d497cbd80e60c033dae9c.png)</p>
+<img src="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part2/4df6cb91860d497cbd80e60c033dae9c.png" srcset="/img/loading.gif" lazyload class="" title="image.png">
+
 <ul>
 <li>同样也是在<code>setContext</code>时注册<code>services</code></li>
 </ul>
@@ -563,8 +575,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>iOS架构 - 组件化方案 (2)</div>
-      <div>blog.cfjia.cc/2022/03/22/iOS架构 - 组件化方案 (2)/</div>
+      <div>iOS组件化方案-Part2</div>
+      <div>blog.cfjia.cc/2022/03/22/iOS组件化方案-Part2/</div>
     </div>
     <div class="license-meta">
       
@@ -608,9 +620,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/12/21/iOS%E9%9D%A2%E8%AF%95%E9%A2%98-1/" title="iOS面试题 part 1 - Runtime 内存结构">
+                      <a href="/2022/12/21/iOS%E9%9D%A2%E8%AF%95%E9%A2%98-1/" title="iOS面试题-Part1">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">iOS面试题 part 1 - Runtime 内存结构</span>
+                        <span class="hidden-mobile">iOS面试题-Part1</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -618,8 +630,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/03/22/iOS%E6%9E%B6%E6%9E%84%20-%20%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88%20(1)/" title="iOS架构 - 组件化方案 (1)">
-                        <span class="hidden-mobile">iOS架构 - 组件化方案 (1)</span>
+                      <a href="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part1/" title="iOS组件化方案-Part1">
+                        <span class="hidden-mobile">iOS组件化方案-Part1</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

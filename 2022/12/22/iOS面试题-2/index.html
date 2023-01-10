@@ -16,15 +16,15 @@
   <meta name="author" content="cfjia">
   <meta name="keywords" content="iOS">
   
-    <meta name="description" content="1. weak的实现原理？sideTable的结构是什么样的？weak：其实是一个hash表结构，其中的key是所指对象的地址，value是weak的指针数组，weak表示的是弱引用，不会对对象引用计数+1，当引用的对象被释放的时候，其值被自动设置为nil，一般用于解决循环引用的。 weak的实现原理1、初始化时：runtime会调用objc_initWeak函数，初始化一个新的weak指针指向对">
+    <meta name="description" content="内存管理">
 <meta property="og:type" content="article">
-<meta property="og:title" content="iOS面试题 part 2 - 内存管理">
+<meta property="og:title" content="iOS面试题-Part2">
 <meta property="og:url" content="blog.cfjia.cc/2022/12/22/iOS%E9%9D%A2%E8%AF%95%E9%A2%98-2/index.html">
 <meta property="og:site_name" content="黑夜里的眸">
-<meta property="og:description" content="1. weak的实现原理？sideTable的结构是什么样的？weak：其实是一个hash表结构，其中的key是所指对象的地址，value是weak的指针数组，weak表示的是弱引用，不会对对象引用计数+1，当引用的对象被释放的时候，其值被自动设置为nil，一般用于解决循环引用的。 weak的实现原理1、初始化时：runtime会调用objc_initWeak函数，初始化一个新的weak指针指向对">
+<meta property="og:description" content="内存管理">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-12-22T12:00:00.000Z">
-<meta property="article:modified_time" content="2023-01-10T05:56:13.834Z">
+<meta property="article:modified_time" content="2023-01-10T06:41:53.931Z">
 <meta property="article:author" content="cfjia">
 <meta property="article:tag" content="iOS">
 <meta property="article:tag" content="面试题">
@@ -33,7 +33,7 @@
   
   
   
-  <title>iOS面试题 part 2 - 内存管理 - 黑夜里的眸</title>
+  <title>iOS面试题-Part2 - 黑夜里的眸</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -199,7 +199,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="iOS面试题 part 2 - 内存管理"></span>
+            <span id="subtitle" data-typed-text="iOS面试题-Part2"></span>
           
         </div>
 
@@ -271,7 +271,7 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">iOS面试题 part 2 - 内存管理</h1>
+            <h1 style="display: none">iOS面试题-Part2</h1>
             
             
               <div class="markdown-body">
@@ -346,7 +346,7 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>iOS面试题 part 2 - 内存管理</div>
+      <div>iOS面试题-Part2</div>
       <div>blog.cfjia.cc/2022/12/22/iOS面试题-2/</div>
     </div>
     <div class="license-meta">
@@ -395,8 +395,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/12/21/iOS%E9%9D%A2%E8%AF%95%E9%A2%98-1/" title="iOS面试题 part 1 - Runtime 内存结构">
-                        <span class="hidden-mobile">iOS面试题 part 1 - Runtime 内存结构</span>
+                      <a href="/2022/12/21/iOS%E9%9D%A2%E8%AF%95%E9%A2%98-1/" title="iOS面试题-Part1">
+                        <span class="hidden-mobile">iOS面试题-Part1</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
