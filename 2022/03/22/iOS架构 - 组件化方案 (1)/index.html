@@ -97,7 +97,7 @@
   <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand" href="/">
-      <strong>Fluid</strong>
+      <strong>黑夜里的眸</strong>
     </a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
@@ -222,7 +222,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          6k 字
+          5.8k 字
         
       </span>
     
@@ -233,7 +233,7 @@
         
         
         
-          50 分钟
+          49 分钟
         
       </span>
     
@@ -342,7 +342,7 @@
 <ul>
 <li>集成cocopods，进行本地管理：</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ cd 项目目录</span><br><span class="line">$ pod init</span><br><span class="line">$ pod init</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs powershell"><span class="hljs-variable">$</span> <span class="hljs-built_in">cd</span> 项目目录<br><span class="hljs-variable">$</span> pod init<br><span class="hljs-variable">$</span> pod init<br></code></pre></td></tr></table></figure>
 
 <ul>
 <li>编辑podfile，并执行<code>pod install</code></li>
@@ -367,7 +367,7 @@
 <h4 id="3、主工程调用library"><a href="#3、主工程调用library" class="headerlink" title="3、主工程调用library"></a>3、主工程调用library</h4><ul>
 <li>在CJLCore中新建一个文件，并添加如下代码</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;类需要声明为public</span><br><span class="line">public class CJLCoreSetting: NSObject &#123;</span><br><span class="line">    &#x2F;&#x2F;属性需要声明为public</span><br><span class="line">    public static let SCRET_KEY &#x3D; &quot;SCRET_KEY&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs angelscript"><span class="hljs-comment">//类需要声明为public</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-symbol">CJLCoreSetting: <span class="hljs-symbol">NSObject</span></span> &#123;<br>    <span class="hljs-comment">//属性需要声明为public</span><br>    <span class="hljs-keyword">public</span> static let SCRET_KEY = <span class="hljs-string">&quot;SCRET_KEY&quot;</span><br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>在<code>Build Phases -&gt; Headers -&gt; Public</code>中将新建的文件添加为public，这样主工程才能访问该文件</p>
 <p>![image.png](iOS架构 - 组件化方案 (1)/dc187aeebe7e457bbd5440e924d005b4.png)</p>
@@ -377,7 +377,7 @@
 <p>![image.png](iOS架构 - 组件化方案 (1)/ddb88b2f9adb401abe5f6e259cf8bf0d.png)</p>
 <p>这里需要注意的是，子library之间的互相调用，与主工程调用library类似，主需要添加依赖、暴露header即可</p>
 <h4 id="5、使用cocoapods管理三方依赖"><a href="#5、使用cocoapods管理三方依赖" class="headerlink" title="5、使用cocoapods管理三方依赖"></a>5、使用cocoapods管理三方依赖</h4><p>假设我们需要在<code>CJLCore</code>中封装网络层代码，需要用到三方库<code>Alamofire</code>，在podfile中</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">platform :ios, &#39;9.0&#39;</span><br><span class="line">inhibit_all_warnings!</span><br><span class="line">use_frameworks!</span><br><span class="line"></span><br><span class="line">#配置workspace路径</span><br><span class="line">workspace &#39;Modularization.xcworkspace&#39;</span><br><span class="line"></span><br><span class="line">################# 三方依赖</span><br><span class="line"># 公有</span><br><span class="line">def workspace_pods</span><br><span class="line">  pod &#39;SwiftyJSON&#39;</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line"># 主工程</span><br><span class="line">def project_only_pods</span><br><span class="line">  pod &#39;SnapKit&#39;</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">#网络</span><br><span class="line">def network_layer_pods</span><br><span class="line">  pod &#39;Alamofire&#39;</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">################# 模块</span><br><span class="line">target &#39;CJLCore&#39; do</span><br><span class="line">  #配置libray路径</span><br><span class="line">  project &#39;CJLCore&#x2F;CJLCore.xcodeproj&#39;</span><br><span class="line">  </span><br><span class="line">  workspace_pods</span><br><span class="line">  network_layer_pods</span><br><span class="line"></span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">################# 主工程</span><br><span class="line">target &#39;Modularization&#39; do</span><br><span class="line">  </span><br><span class="line">  workspace_pods</span><br><span class="line">  project_only_pods</span><br><span class="line">  network_layer_pods</span><br><span class="line"></span><br><span class="line">  target &#39;ModularizationTests&#39; do</span><br><span class="line">    inherit! :search_paths</span><br><span class="line"></span><br><span class="line">  end</span><br><span class="line"></span><br><span class="line">  target &#39;ModularizationUITests&#39; do</span><br><span class="line"></span><br><span class="line">  end</span><br><span class="line"></span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><code class="hljs clean">platform :ios, <span class="hljs-string">&#x27;9.0&#x27;</span><br>inhibit_all_warnings!<br>use_frameworks!<br><br>#配置workspace路径<br>workspace <span class="hljs-string">&#x27;Modularization.xcworkspace&#x27;</span><br><br>################# 三方依赖<br># 公有<br>def workspace_pods<br>  pod <span class="hljs-string">&#x27;SwiftyJSON&#x27;</span><br>end<br><br># 主工程<br>def project_only_pods<br>  pod <span class="hljs-string">&#x27;SnapKit&#x27;</span><br>end<br><br>#网络<br>def network_layer_pods<br>  pod <span class="hljs-string">&#x27;Alamofire&#x27;</span><br>end<br><br>################# 模块<br>target <span class="hljs-string">&#x27;CJLCore&#x27;</span> do<br>  #配置libray路径<br>  project <span class="hljs-string">&#x27;CJLCore/CJLCore.xcodeproj&#x27;</span><br>  <br>  workspace_pods<br>  network_layer_pods<br><br>end<br><br>################# 主工程<br>target <span class="hljs-string">&#x27;Modularization&#x27;</span> do<br>  <br>  workspace_pods<br>  project_only_pods<br>  network_layer_pods<br><br>  target <span class="hljs-string">&#x27;ModularizationTests&#x27;</span> do<br>    inherit! :search_paths<br><br>  end<br><br>  target <span class="hljs-string">&#x27;ModularizationUITests&#x27;</span> do<br><br>  end<br><br>end<br></code></pre></td></tr></table></figure>
 
 <p>到此，一个本地组件化的模块就配置完成了</p>
 <h3 id="cocoapods组件化"><a href="#cocoapods组件化" class="headerlink" title="cocoapods组件化"></a>cocoapods组件化</h3><p>除了本地组件化，还可以使用<code>cocoapods</code>，其原理如下图所示</p>
@@ -386,14 +386,14 @@
 <li>在github上创建一个MySpecs仓库<br>具体步骤：登录github–&gt;点击右上角“+”–&gt;选择 new repository–&gt;输入Repository name为MySpecs，选择仓库类型为 private，点击Create repository。</li>
 <li>将私有仓库添加至本地<code>~/.cocoapods/repos</code>目录</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod repo add mySpecs https:&#x2F;&#x2F;github.com&#x2F;xxx&#x2F;MySpecs.git</span><br></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">pod repo add mySpecs https:<span class="hljs-regexp">//gi</span>thub.com<span class="hljs-regexp">/xxx/</span>MySpecs.git<br></code></pre></td></tr></table></figure>
 
 
 
 <h4 id="2、创建pods-工程，即组件化工程"><a href="#2、创建pods-工程，即组件化工程" class="headerlink" title="2、创建pods 工程，即组件化工程"></a>2、创建pods 工程，即组件化工程</h4><ul>
 <li>使用终端创建<code>CJLServices</code>模块</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod lib create CJLServices</span><br></pre></td></tr></table></figure>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs crystal">pod <span class="hljs-class"><span class="hljs-keyword">lib</span> <span class="hljs-title">create</span> <span class="hljs-title">CJLServices</span></span><br></code></pre></td></tr></table></figure>
 
 <p>根据提示依次输入：ios、swift、yes、none、no、CJL</p>
 <p>![image.png](iOS架构 - 组件化方案 (1)/5565cf790f424ae58611554ee82710a0.png)</p>
@@ -406,12 +406,12 @@
 <ul>
 <li>如果需要依赖三方库，需要配置<code>s.dependency</code></li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">s.dependency &#39;AFNetworking&#39;</span><br></pre></td></tr></table></figure>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs stylus">s<span class="hljs-selector-class">.dependency</span> <span class="hljs-string">&#x27;AFNetworking&#x27;</span><br></code></pre></td></tr></table></figure>
 
 <ul>
 <li>如果模块间需要相互引用，同样需要配置<code>s.dependency</code>，以<code>CJLBase</code>为例，需要引用<code>CJLService</code></li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;********1、修改 podspec 文件</span><br><span class="line">s.dependency &#39;CJLServices&#39;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;********2、修改 podfile 文件</span><br><span class="line">pod &#39;CJLServices&#39;, :path &#x3D;&gt; &#39;..&#x2F;..&#x2F;CJLServices&#39;</span><br></pre></td></tr></table></figure>
+<figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs arcade"><span class="hljs-comment">//********1、修改 podspec 文件</span><br>s.dependency <span class="hljs-string">&#x27;CJLServices&#x27;</span><br><br><span class="hljs-comment">//********2、修改 podfile 文件</span><br>pod <span class="hljs-string">&#x27;CJLServices&#x27;</span>, :<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">&#x27;../../CJLServices&#x27;</span><br></code></pre></td></tr></table></figure>
 
 <ul>
 <li>如果需要加载资源，例如图片、json、bundle文件等</li>
@@ -424,7 +424,7 @@
 </ul>
 </li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;*****1、修改 podspec 文件</span><br><span class="line">s.resource_bundles &#x3D; &#123;</span><br><span class="line">     &#39;CJLBase&#39; &#x3D;&gt; [&#39;CJLBase&#x2F;Assets&#x2F;*&#39;]</span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">&#x2F;&#x2F;*****2、使用</span><br><span class="line">let bundlePath: String &#x3D; Bundle.init(for: dynamicClass.self).resourcePath! + &quot;&#x2F;CJLBase.bundle&quot;</span><br><span class="line">let bundle &#x3D; Bundle(path: bundlePath)</span><br><span class="line">if let path &#x3D; bundle?.path(forResource: &quot;mouse&quot;, ofType: &quot;jpg&quot;)&#123;</span><br><span class="line">    self.imgView.image &#x3D; UIImage(contentsOfFile: path)</span><br><span class="line">&#125;           </span><br></pre></td></tr></table></figure>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs reasonml"><span class="hljs-comment">//*****1、修改 podspec 文件</span><br>s.resource_bundles = &#123;<br>     &#x27;CJLBase&#x27; =&gt; <span class="hljs-literal">[&#x27;CJLB<span class="hljs-identifier">ase</span><span class="hljs-operator">/</span>A<span class="hljs-identifier">ssets</span><span class="hljs-operator">/</span><span class="hljs-operator">*</span>&#x27;]</span><br>   &#125;<br>   <br><span class="hljs-comment">//*****2、使用</span><br><span class="hljs-keyword">let</span> bundlePath: String = <span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Bundle</span>.</span></span>init(<span class="hljs-keyword">for</span>: dynamicClass.self).resourcePath! + <span class="hljs-string">&quot;/CJLBase.bundle&quot;</span><br><span class="hljs-keyword">let</span> bundle = <span class="hljs-constructor">Bundle(<span class="hljs-params">path</span>: <span class="hljs-params">bundlePath</span>)</span><br><span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> path = bundle?.path(forResource: <span class="hljs-string">&quot;mouse&quot;</span>, ofType: <span class="hljs-string">&quot;jpg&quot;</span>)&#123;<br>    self.imgView.image = <span class="hljs-constructor">UIImage(<span class="hljs-params">contentsOfFile</span>: <span class="hljs-params">path</span>)</span><br>&#125;           <br></code></pre></td></tr></table></figure>
 
 <p>同理，模块中的xib，json文件的获取方式也是一样的</p>
 <h4 id="4、提交至git"><a href="#4、提交至git" class="headerlink" title="4、提交至git"></a>4、提交至git</h4><p>这里提交至git的模块是pods工程才可以，以<code>CJLBase</code>为例</p>
@@ -432,7 +432,7 @@
 <li>需要在github上创建一个私有repository，命名为<code>CJLBase</code></li>
 <li>执行以下终端命令</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$git init</span><br><span class="line">$git add .</span><br><span class="line">$ git commit -am &quot;第一次提交&quot; </span><br><span class="line">&#x2F;&#x2F;即第一个步骤中创建的仓库地址</span><br><span class="line">$ git remote add origin https:&#x2F;&#x2F;github.com&#x2F;xxx&#x2F;CJLBase.git</span><br><span class="line"> </span><br><span class="line">$ git push origin master </span><br><span class="line">&#x2F;&#x2F;一定要有标签，不然会有下面的警告</span><br><span class="line">&#x2F;&#x2F;podspec文件中获取Git版本控制的项目需要tag号，</span><br><span class="line">$ git tag -m &quot;first release&quot; &quot;0.1.0&quot; </span><br><span class="line">$ git push --tags </span><br></pre></td></tr></table></figure>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs gams"><span class="hljs-meta"><span class="hljs-meta-keyword">$git</span> init</span><br><span class="hljs-meta"><span class="hljs-meta-keyword">$git</span> add .</span><br><span class="hljs-symbol">$</span> git commit -am <span class="hljs-string">&quot;第一次提交&quot;</span> <br><span class="hljs-comment">//即第一个步骤中创建的仓库地址</span><br><span class="hljs-symbol">$</span> git remote add origin https:<span class="hljs-comment">//github.com/xxx/CJLBase.git</span><br> <br><span class="hljs-symbol">$</span> git push origin master <br><span class="hljs-comment">//一定要有标签，不然会有下面的警告</span><br><span class="hljs-comment">//podspec文件中获取Git版本控制的项目需要tag号，</span><br><span class="hljs-symbol">$</span> git tag -m <span class="hljs-string">&quot;first release&quot;</span> <span class="hljs-string">&quot;0.1.0&quot;</span> <br><span class="hljs-symbol">$</span> git push --tags <br></code></pre></td></tr></table></figure>
 
 
 
@@ -446,13 +446,13 @@
 </blockquote>
 <p>**<br>**</p>
 <h4 id="6、提交到私有仓库"><a href="#6、提交到私有仓库" class="headerlink" title="6、提交到私有仓库"></a>6、提交到私有仓库</h4><p>执行以下命令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pod repo push [本地Spec Repo名称][podspec文件路径]</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F;******举例</span><br><span class="line">$ pod repo push MySpecs CJLBase.podspec</span><br></pre></td></tr></table></figure>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs markdown">pod repo push [<span class="hljs-string">本地Spec Repo名称</span>][<span class="hljs-symbol">podspec文件路径</span>]<br> <br>//<span class="hljs-strong">****</span><span class="hljs-strong">**举例</span><br><span class="hljs-strong">$ pod repo push MySpecs CJLBase.podspec</span><br></code></pre></td></tr></table></figure>
 
 <p>提交成功后，可在本地仓库中看到提交路径<code>MySpecs -&gt; CJLBase</code></p>
 <h4 id="7、使用"><a href="#7、使用" class="headerlink" title="7、使用"></a>7、使用</h4><ul>
 <li>新建一个工程，在项目的podfile里添加</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#私有spec仓库的地址，而不是某个pod仓库的地址</span><br><span class="line">source &#39;https:&#x2F;&#x2F;github.com&#x2F;xxx&#x2F;MySpecs&#39;</span><br><span class="line">pod &#39;CJLBase&#39;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#私有spec仓库的地址，而不是某个pod仓库的地址</span><br><span class="hljs-built_in">source</span> <span class="hljs-string">&#x27;https://github.com/xxx/MySpecs&#x27;</span><br>pod <span class="hljs-string">&#x27;CJLBase&#x27;</span><br></code></pre></td></tr></table></figure>
 
 <ul>
 <li>执行<code>pod install</code>即可</li>

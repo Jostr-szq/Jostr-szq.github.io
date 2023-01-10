@@ -97,7 +97,7 @@
   <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand" href="/">
-      <strong>Fluid</strong>
+      <strong>黑夜里的眸</strong>
     </a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
@@ -279,7 +279,7 @@
                 <h3 id="1-weak的实现原理？sideTable的结构是什么样的？"><a href="#1-weak的实现原理？sideTable的结构是什么样的？" class="headerlink" title="1. weak的实现原理？sideTable的结构是什么样的？"></a>1. weak的实现原理？sideTable的结构是什么样的？</h3><p>weak：其实是一个hash表结构，其中的key是所指对象的地址，value是weak的指针数组，weak表示的是弱引用，不会对对象引用计数+1，当引用的对象被释放的时候，其值被自动设置为nil，一般用于解决循环引用的。</p>
 <p>weak的实现原理<br>1、初始化时：runtime会调用objc_initWeak函数，初始化一个新的weak指针指向对象的地址。<br>2、添加引用时：objc_initWeak函数会调用 objc_storeWeak() 函数， objc_storeWeak() 的作用是更新指针指向，创建对应的弱引用表。3、释放时，调用clearDeallocating函数。clearDeallocating函数首先根据对象地址获取所有weak指针地址的数组，然后遍历这个数组把其中的数据设为nil，最后把这个entry从weak表中删除，最后清理对象的记录。</p>
 <p>SideTable的结构如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">struct SideTable &#123;</span><br><span class="line">&#x2F;&#x2F; 保证原子操作的自旋锁</span><br><span class="line">    spinlock_t slock;</span><br><span class="line">    &#x2F;&#x2F; 引用计数的 hash 表</span><br><span class="line">    RefcountMap refcnts;</span><br><span class="line">    &#x2F;&#x2F; weak 引用全局 hash 表</span><br><span class="line">    weak_table_t weak_table;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">SideTable</span> &#123;</span><br><span class="hljs-comment">// 保证原子操作的自旋锁</span><br>    <span class="hljs-keyword">spinlock_t</span> slock;<br>    <span class="hljs-comment">// 引用计数的 hash 表</span><br>    RefcountMap refcnts;<br>    <span class="hljs-comment">// weak 引用全局 hash 表</span><br>    <span class="hljs-keyword">weak_table_t</span> weak_table;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <h3 id="2-关联对象的应用？系统如何实现关联对象的"><a href="#2-关联对象的应用？系统如何实现关联对象的" class="headerlink" title="2. 关联对象的应用？系统如何实现关联对象的"></a>2. 关联对象的应用？系统如何实现关联对象的</h3><p>应用：可以在不改变类的源码的情况下，为类添加实例变量（注意：这里指的实例变量，并不是真正的属于类的实例变量，而是一个关联值变量）结合category使用，为类扩展存储属性。</p>
 <p>关联对象实现原理：关联对象的值实际上是通过AssociationsManager对象负责管理的，这个对象里有个AssociationsHashMap静态表，用来存储对象的关联值的，关于AssociationsHashMap存储的数据结构如下：<br>AssociationsHashMap：<br>——添加属性对象的指针地址（key）：ObjectAssociationMap（value：所有关联值对象）<br>ObjectAssociationMap：<br>——关联值的key：关联值的value</p>

@@ -97,7 +97,7 @@
   <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand" href="/">
-      <strong>Fluid</strong>
+      <strong>黑夜里的眸</strong>
     </a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
@@ -334,7 +334,7 @@
 <li><p><code>SEL</code> :方法名称</p>
 </li>
 <li><p><code>Method </code>:是objc_method类型指针，它是一个结构体 ,如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">struct objc_method &#123;</span><br><span class="line">    SEL _Nonnull method_name                                 OBJC2_UNAVAILABLE;</span><br><span class="line">    char * _Nullable method_types                            OBJC2_UNAVAILABLE;</span><br><span class="line">    IMP _Nonnull method_imp                                  OBJC2_UNAVAILABLE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs objective-c">struct objc_method &#123;<br>    SEL _Nonnull method_name                                 OBJC2_UNAVAILABLE;<br>    char * _Nullable method_types                            OBJC2_UNAVAILABLE;<br>    IMP _Nonnull method_imp                                  OBJC2_UNAVAILABLE;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 </li>
 </ul>
@@ -343,7 +343,7 @@
 <li><p>例如 Button添加Target和Selector的时候.或者 实现类的<code>swizzle</code>的时候会用到，通过<code>class_getInstanceMethod(class, SEL)</code>来获取类的方法<code>Method</code>，其中用到了SEL作为方法名</p>
 </li>
 <li><p>例如 给类动态添加方法，此时我们需要调用class_addMethod(Class, SEL, IMP, types)，该方法需要我们传递一个方法的实现函数IMP，例如:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">static void funcName(id receiver, SEL cmd, 方法参数...) &#123;</span><br><span class="line">   &#x2F;&#x2F; 方法具体的实现   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs objective-c">static void funcName(id receiver, SEL cmd, 方法参数...) &#123;<br>   &#x2F;&#x2F; 方法具体的实现   <br>&#125;<br></code></pre></td></tr></table></figure>
 
 </li>
 </ul>
