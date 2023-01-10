@@ -24,7 +24,7 @@
 <meta property="og:description" content="Runtime-内存结构">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-12-21T12:00:00.000Z">
-<meta property="article:modified_time" content="2023-01-10T06:42:02.669Z">
+<meta property="article:modified_time" content="2023-01-10T06:53:55.909Z">
 <meta property="article:author" content="cfjia">
 <meta property="article:tag" content="iOS">
 <meta property="article:tag" content="Runtime">
@@ -276,8 +276,8 @@
             
               <div class="markdown-body">
                 
-                <h3 id="1-介绍下runtime的内存模型-isa，对象，类，metaclass，结构体的存储信息等"><a href="#1-介绍下runtime的内存模型-isa，对象，类，metaclass，结构体的存储信息等" class="headerlink" title="1. 介绍下runtime的内存模型(isa，对象，类，metaclass，结构体的存储信息等)"></a>1. 介绍下runtime的内存模型(isa，对象，类，metaclass，结构体的存储信息等)</h3><p>对象：OC中的对象指向的是一个objc_object指针类型，typedef struct objc_object *id；从它的结构体中可以看出，它包含一个isa指针，指向的是这个对象的类对象。一个对象的实例就是通过isa指针找到它自己的class，而这个class中存储的就是这个实例的方法列表，属性列表，成员变量等相关信息。</p>
-<p>类：在OC中类也是用class表示的，实际上它指向的是objc_class指针类型,typedef struct objc_class *Class;而objc_class继承于objc_object,这就很好的解释了万物皆对象，oc中的类也是对象。</p>
+                <h3 id="1-介绍下runtime的内存模型-isa，对象，类，metaclass，结构体的存储信息等"><a href="#1-介绍下runtime的内存模型-isa，对象，类，metaclass，结构体的存储信息等" class="headerlink" title="1. 介绍下runtime的内存模型(isa，对象，类，metaclass，结构体的存储信息等)"></a>1. 介绍下runtime的内存模型(isa，对象，类，metaclass，结构体的存储信息等)</h3><p><strong>对象</strong>：OC中的对象指向的是一个objc_object指针类型，typedef struct objc_object *id；从它的结构体中可以看出，它包含一个isa指针，指向的是这个对象的类对象。一个对象的实例就是通过isa指针找到它自己的class，而这个class中存储的就是这个实例的方法列表，属性列表，成员变量等相关信息。</p>
+<p><strong>类</strong>：在OC中类也是用class表示的，实际上它指向的是objc_class指针类型,typedef struct objc_class *Class;而objc_class继承于objc_object,这就很好的解释了万物皆对象，oc中的类也是对象。</p>
 <h3 id="2-为什么要设计metaclass"><a href="#2-为什么要设计metaclass" class="headerlink" title="2. 为什么要设计metaclass?"></a>2. 为什么要设计metaclass?</h3><p>符合单一职责设计原则，从面向对象的设计理念来说，万物皆对象，类也是对象，当然元类也是对象，存在的目的一方面可以让对象的继承链关系完美闭环，也保证能完美的复用传递消息机制。这样设计也是参考了smalltalk的理念。</p>
 <h3 id="3-class-copyIvarList-和class-copyPropertyList-区别"><a href="#3-class-copyIvarList-和class-copyPropertyList-区别" class="headerlink" title="3. class_copyIvarList()和class_copyPropertyList()区别"></a>3. class_copyIvarList()和class_copyPropertyList()区别</h3><p>class_copyIvarList()可以获取到所有的成员变量，包括花括号内的变量(包含.h和.m)</p>
 <p>class_copyPropertyList()只能获取到@property关键字声明的属性(.h和.m)</p>
@@ -290,23 +290,23 @@
 <h3 id="5-category是如何被加载的，两个category的load方法的加载顺序，两个category同名方法的加载顺序？"><a href="#5-category是如何被加载的，两个category的load方法的加载顺序，两个category同名方法的加载顺序？" class="headerlink" title="5. category是如何被加载的，两个category的load方法的加载顺序，两个category同名方法的加载顺序？"></a>5. category是如何被加载的，两个category的load方法的加载顺序，两个category同名方法的加载顺序？</h3><p>category的加载是发生在运行时，加载的过程是把category的实例方法，属性，协议添加到类对象上，把类方法添加到meteclass上；</p>
 <p>加载顺序为：父类&gt;本类&gt;分类，而不同分类的加载顺序按照编译的顺序加载，即：xcode中的Build Phases中的Compile Sources中的文件从上到下的顺序加载的。</p>
 <p>同名的普通方法，会优先调用分类的方法，不同分类的同名方法会根据编译顺序，先调用最后一个编译的分类方法。</p>
-<p>原因：根据runtime的消息传递机制中的核心函数void objc_msgSend(id self,SEL cmd,…)来发送消息，先从当前类中查找调用的方法，若没有找到则继续从其父类中一层层往上找，那么对于category重写同一个方法，则在消息传递的过程中，会最先找到category中的方法并执行该方法。对于多个分类调用同一个方法，Xcode在运行时是根据buildPhases-&gt;Compile Sources里面的从上至下顺序编译的，编译时通过压栈的方式将多个分类压栈，根据后进先出的原则，后编译的会被先调用，（插入顶部添加，即[methodLists insertObject:category_method atIndex:0]; 所以objc_msgSend遍历方法列表查找SEL 对应的IMP时，会先找到分类重写的那个，调用执行）当objc_msgSend找到方法并调用之后，就不再继续传递消息，所以形成所谓的覆盖。</p>
-<h3 id="6-category和extension的区别，能给NSObject添加Extension吗，结果？"><a href="#6-category和extension的区别，能给NSObject添加Extension吗，结果？" class="headerlink" title="6. category和extension的区别，能给NSObject添加Extension吗，结果？"></a>6. category和extension的区别，能给NSObject添加Extension吗，结果？</h3><p>category：分类</p>
+<p><strong>原因</strong>：根据runtime的消息传递机制中的核心函数void objc_msgSend(id self,SEL cmd,…)来发送消息，先从当前类中查找调用的方法，若没有找到则继续从其父类中一层层往上找，那么对于category重写同一个方法，则在消息传递的过程中，会最先找到category中的方法并执行该方法。对于多个分类调用同一个方法，Xcode在运行时是根据buildPhases-&gt;Compile Sources里面的从上至下顺序编译的，编译时通过压栈的方式将多个分类压栈，根据后进先出的原则，后编译的会被先调用，（插入顶部添加，即[methodLists insertObject:category_method atIndex:0]; 所以objc_msgSend遍历方法列表查找SEL 对应的IMP时，会先找到分类重写的那个，调用执行）当objc_msgSend找到方法并调用之后，就不再继续传递消息，所以形成所谓的覆盖。</p>
+<h3 id="6-category和extension的区别，能给NSObject添加Extension吗，结果？"><a href="#6-category和extension的区别，能给NSObject添加Extension吗，结果？" class="headerlink" title="6. category和extension的区别，能给NSObject添加Extension吗，结果？"></a>6. category和extension的区别，能给NSObject添加Extension吗，结果？</h3><p><strong>category：分类</strong></p>
 <p>给类添加新的方法<br>不能给类添加成员变量<br>通过@property定义的变量，只能生成对应的getter和setter的方法声明，但是不能实现getter和setter方法，同时也不能生成带下划线的成员属性<br>是运行期决定的<br>注意：为什么不能添加属性，原因就是category是运行期决定的，在运行期类的内存布局已经确定，如果添加实例变量会破坏类的内存布局，会产生意想不到的错误。</p>
-<p>extension：扩展</p>
+<p><strong>extension：扩展</strong></p>
 <p>可以给类添加成员变量，但是是私有的 可以給类添加方法，但是是私有的 添加的属性和方法是类的一部分，在编译期就决定的。在编译器和头文件的@interface和实现文件里的@implement一起形成了一个完整的类。 伴随着类的产生而产生，也随着类的消失而消失 必须有类的源码才可以给类添加extension，所以对于系统一些类，如nsstring，就无法添加类扩展 不能给NSObject添加Extension，因为在extension中添加的方法或属性必须在源类的文件的.m文件中实现才可以，即：你必须有一个类的源码才能添加一个类的extension。</p>
 <h3 id="7-消息转发机制，消息转发机制和其他语言的消息机制优劣对比"><a href="#7-消息转发机制，消息转发机制和其他语言的消息机制优劣对比" class="headerlink" title="7. 消息转发机制，消息转发机制和其他语言的消息机制优劣对比"></a>7. 消息转发机制，消息转发机制和其他语言的消息机制优劣对比</h3><p>消息转发机制是相对于消息传递机制而言的。</p>
-<p>消息传递机制：<br>Runtime也就是运行时，就是系统在运行时的一些机制，其中最主要的就是消息机制。<br>对于C语言，函数的调用在编译阶段就会决定调用哪个函数，编译完成后，顺序执行。而OC的函数调用，称为消息发送，在编译阶段并不能真正决定调用哪个函数（也就是说，在编译阶段，OC可以调用任何函数，即使这个函数并未实现，但只要声明过就不会报错。而C语在编译阶段就会报错）。只有在运行时，才会根据函数的名称找到对应函数的地址来进行调用。</p>
+<p><strong>消息传递机制：</strong><br>Runtime也就是运行时，就是系统在运行时的一些机制，其中最主要的就是消息机制。<br>对于C语言，函数的调用在编译阶段就会决定调用哪个函数，编译完成后，顺序执行。而OC的函数调用，称为消息发送，在编译阶段并不能真正决定调用哪个函数（也就是说，在编译阶段，OC可以调用任何函数，即使这个函数并未实现，但只要声明过就不会报错。而C语在编译阶段就会报错）。只有在运行时，才会根据函数的名称找到对应函数的地址来进行调用。</p>
 <p>[objc makeTest]<br>首先，编译器将代码[obj makeText];转化为objc_msgSend(obj, @selector (makeText));，在objc_msgSend函数中。首先通过obj的isa指针找到obj对应的class。在Class中先去cache中 通过SEL查找对应函数method，若 cache中未找到。再去methodList中查找，若methodlist中未找到，则取superClass中查找。若能找到，则将method加入到cache中，以方便下次查找，并通过method中的函数指针跳转到对应的函数中去执行。</p>
 <p>消息转发机制(可以间接实现多继承)：<br>如通过以上消息发送机制，并未找到对应的函数实现，将会进入到消息转发机制流程；</p>
 <ol>
-<li><p>动态方法解析</p>
+<li><p><strong>动态方法解析</strong></p>
 <p>resolveInstanceMethod，可以动态的添加一个方法到类中</p>
 </li>
-<li><p>替换消息接收者，快速转发</p>
+<li><p><strong>替换消息接收者，快速转发</strong></p>
 <p>forwardingTargetForSelector，指定其他类对象作为消息的接收者，进行消息快速转发</p>
 </li>
-<li><p>完全消息转发机制</p>
+<li><p><strong>完全消息转发机制</strong></p>
 <p>runtime发送methodSignatureForSelector消息获取Selector对应的方法签名。返回值非空则通过forwardInvocation:转发消息，返回值为空则向当前对象发送doesNotRecognizeSelector:消息，程序崩溃退出。</p>
 <ul>
 <li>把消息存储，在你觉得合适的时机转发出去，或者不处理这个消息。</li>
