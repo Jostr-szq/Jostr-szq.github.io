@@ -15,7 +15,7 @@
       
       <category>技术</category>
       
-      <category>iOS进阶</category>
+      <category>iOS面试</category>
       
     </categories>
     
@@ -24,9 +24,9 @@
       
       <tag>iOS</tag>
       
-      <tag>Runtime</tag>
+      <tag>面试题</tag>
       
-      <tag>基础</tag>
+      <tag>内存管理</tag>
       
     </tags>
     
@@ -46,7 +46,7 @@
       
       <category>技术</category>
       
-      <category>iOS进阶</category>
+      <category>iOS面试</category>
       
     </categories>
     
@@ -57,7 +57,7 @@
       
       <tag>Runtime</tag>
       
-      <tag>基础</tag>
+      <tag>面试题</tag>
       
     </tags>
     
@@ -77,7 +77,7 @@
       
       <category>技术</category>
       
-      <category>iOS进阶</category>
+      <category>iOS架构</category>
       
     </categories>
     
@@ -86,9 +86,9 @@
       
       <tag>iOS</tag>
       
-      <tag>Runtime</tag>
+      <tag>架构</tag>
       
-      <tag>基础</tag>
+      <tag>组件化</tag>
       
     </tags>
     
@@ -108,7 +108,7 @@
       
       <category>技术</category>
       
-      <category>iOS进阶</category>
+      <category>iOS架构</category>
       
     </categories>
     
@@ -117,9 +117,9 @@
       
       <tag>iOS</tag>
       
-      <tag>Runtime</tag>
+      <tag>架构</tag>
       
-      <tag>基础</tag>
+      <tag>组件化</tag>
       
     </tags>
     
@@ -148,9 +148,9 @@
       
       <tag>iOS</tag>
       
-      <tag>Runtime</tag>
+      <tag>RunLoop</tag>
       
-      <tag>基础</tag>
+      <tag>线程</tag>
       
     </tags>
     
@@ -179,9 +179,9 @@
       
       <tag>iOS</tag>
       
-      <tag>Runtime</tag>
+      <tag>RunLoop</tag>
       
-      <tag>基础</tag>
+      <tag>原理</tag>
       
     </tags>
     

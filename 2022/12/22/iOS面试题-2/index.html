@@ -24,11 +24,11 @@
 <meta property="og:description" content="1. weak的实现原理？sideTable的结构是什么样的？weak：其实是一个hash表结构，其中的key是所指对象的地址，value是weak的指针数组，weak表示的是弱引用，不会对对象引用计数+1，当引用的对象被释放的时候，其值被自动设置为nil，一般用于解决循环引用的。 weak的实现原理1、初始化时：runtime会调用objc_initWeak函数，初始化一个新的weak指针指向对">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-12-22T12:00:00.000Z">
-<meta property="article:modified_time" content="2023-01-03T13:34:47.927Z">
+<meta property="article:modified_time" content="2023-01-10T05:56:13.834Z">
 <meta property="article:author" content="cfjia">
 <meta property="article:tag" content="iOS">
-<meta property="article:tag" content="Runtime">
-<meta property="article:tag" content="基础">
+<meta property="article:tag" content="面试题">
+<meta property="article:tag" content="内存管理">
 <meta name="twitter:card" content="summary_large_image">
   
   
@@ -313,7 +313,7 @@
   
     <span>></span>
     
-  <a href="/categories/%E6%8A%80%E6%9C%AF/iOS%E8%BF%9B%E9%98%B6/" class="category-chain-item">iOS进阶</a>
+  <a href="/categories/%E6%8A%80%E6%9C%AF/iOS%E9%9D%A2%E8%AF%95/" class="category-chain-item">iOS面试</a>
   
   
 
@@ -332,9 +332,9 @@
       
         <a href="/tags/iOS/">#iOS</a>
       
-        <a href="/tags/Runtime/">#Runtime</a>
+        <a href="/tags/%E9%9D%A2%E8%AF%95%E9%A2%98/">#面试题</a>
       
-        <a href="/tags/%E5%9F%BA%E7%A1%80/">#基础</a>
+        <a href="/tags/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">#内存管理</a>
       
     </div>
   
