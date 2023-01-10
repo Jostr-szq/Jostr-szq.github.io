@@ -1,37 +1,840 @@
-{% extends '_layout.swig' %}
-{% import '_macro/post.swig' as post_template %}
-{% import '_macro/sidebar.swig' as sidebar_template %}
 
 
-{% block title %}{{ page.title }} | {{ config.title }}{% endblock %}
+<!DOCTYPE html>
+<html lang="zh-Hans" data-default-color-scheme=auto>
 
-{% block page_class %}page-post-detail{% endblock %}
 
 
-{% block content %}
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="cfjia">
+  <meta name="keywords" content="iOS">
+  
+    <meta name="description" content="组件化组件化其实就是将模块单独抽离、分层，并指定模块间的通讯方式，从而实现解耦的一种方式，主要运用与团队开发 为什么需要组件化？主要有以下四个原因  1、模块间解耦 2、模块重用 3、提高团队协作开发效率 4、单元测试  当项目因为各种需求，越来越来时，如果此时的各个模块之间是互相调用，即你中有我，我中有你这种情况时，会造成高耦合的情况。一旦我们需要对某一块代码进行修改时，就会牵一发而动全身，导致">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS架构 - 组件化方案 (1)">
+<meta property="og:url" content="blog.cfjia.cc/2022/03/22/iOS%E6%9E%B6%E6%9E%84%20-%20%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88%20(1)/index.html">
+<meta property="og:site_name" content="黑夜里的眸">
+<meta property="og:description" content="组件化组件化其实就是将模块单独抽离、分层，并指定模块间的通讯方式，从而实现解耦的一种方式，主要运用与团队开发 为什么需要组件化？主要有以下四个原因  1、模块间解耦 2、模块重用 3、提高团队协作开发效率 4、单元测试  当项目因为各种需求，越来越来时，如果此时的各个模块之间是互相调用，即你中有我，我中有你这种情况时，会造成高耦合的情况。一旦我们需要对某一块代码进行修改时，就会牵一发而动全身，导致">
+<meta property="og:locale">
+<meta property="article:published_time" content="2022-03-22T05:52:16.000Z">
+<meta property="article:modified_time" content="2023-01-03T13:33:50.395Z">
+<meta property="article:author" content="cfjia">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="Runtime">
+<meta property="article:tag" content="基础">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>iOS架构 - 组件化方案 (1) - 黑夜里的眸</title>
 
-  <div id="posts" class="posts-expand">
-    {{ post_template.render(page) }}
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
-    <div class="post-spread">
-      {% if theme.jiathis %}
-        {% include '_partials/share/jiathis.swig' %}
-      {% elseif theme.baidushare %}
-        {% include '_partials/share/baidushare.swig' %}
-      {% elseif theme.add_this_id %}
-        {% include '_partials/share/add-this.swig' %}
-      {% elseif theme.duoshuo_shortname and theme.duoshuo_share %}
-        {% include '_partials/share/duoshuo_share.swig' %}
-      {% endif %}
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.cfjia.cc","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 5.0.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>Startseite</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>Archiv</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>Kategorien</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>Schlagwörter</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>Über</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
     </div>
   </div>
+</nav>
 
-{% endblock %}
+  
 
-{% block sidebar %}
-  {{ sidebar_template.render(true) }}
-{% endblock %}
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="iOS架构 - 组件化方案 (1)"></span>
+          
+        </div>
 
-{% block script_extra %}
-  {% include '_scripts/pages/post-details.swig' %}
-{% endblock %}
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-03-22 13:52" pubdate>
+          March 22, 2022 pm
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          6k wörter
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          50 minuten
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">iOS架构 - 组件化方案 (1)</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h3 id="组件化"><a href="#组件化" class="headerlink" title="组件化"></a>组件化</h3><p>组件化其实就是<code>将模块单独抽离、分层</code>，并指定模块间的<code>通讯</code>方式，从而实现<code>解耦</code>的一种方式，主要运用与团队开发</p>
+<h4 id="为什么需要组件化？"><a href="#为什么需要组件化？" class="headerlink" title="为什么需要组件化？"></a>为什么需要组件化？</h4><p>主要有以下四个原因</p>
+<ul>
+<li>1、模块间解耦</li>
+<li>2、模块重用</li>
+<li>3、提高团队协作开发效率</li>
+<li>4、单元测试</li>
+</ul>
+<p>当项目因为各种需求，越来越来时，如果此时的各个模块之间是互相调用，即<code>你中有我，我中有你</code>这种情况时，会造成<code>高耦合</code>的情况。一旦我们需要对某一块代码进行<code>修改</code>时，就会<code>牵一发而动全身</code>，导致项目难以维护</p>
+<p>其问题主要体现在以下几个方面：</p>
+<ul>
+<li>1、修改某个功能时，同时需要修改其他模块的代码，因为在其他模块中有该模块的引用。可以理解为<code>高耦合导致代码修改困难</code></li>
+<li>2、模块对外接口不明确，甚至暴露了本不该暴露的私有接口，修改时费时费力。可以理解为<code>接口不固定导致的接口混乱</code></li>
+<li>3、高耦合代码产生的后果就是会影响团队其他成员的开发，产生<code>代码冲突</code></li>
+<li>4、当模块需要重用到其他项目时，<code>难以单独抽离</code></li>
+<li>5、模块间耦合的忌口导致接口和依赖关系混乱，<code>无法进行单元测试</code></li>
+</ul>
+<p>所以为了解决以上问题，我们需要采用更规范的方式来<code>降低模块</code>间的<code>耦合度</code>，这就是<code>组件化</code>，也可以理解为<code>模块化</code></p>
+<p>但是，这里还需要说明一点，因为组件化也是需要一定成本的，需要花费时间设计接口、分离代码等，所以并不是所有的项目都需要组件化。如果你的项目有以下这些特征就<code>不需要组件化</code>：</p>
+<ul>
+<li>1、项目较小，模块间交互简单，耦合少</li>
+<li>2、项目没有被多个外部模块引用，只是一个单独的小模块</li>
+<li>3、模块不需要重用，代码也很少被修改</li>
+<li>4、团队规模很小</li>
+<li>5、不需要编写单元测试</li>
+</ul>
+<p>如果你的有以下特性，说明你就必须要<code>考虑进行组件化</code>了：</p>
+<ul>
+<li>1、模块逻辑复杂，多个模块之间频繁互相引用</li>
+<li>2、项目规模逐渐变大，修改代码变的越来越困难（这里可以理解为：修改一处代码，需要同时修改其他多个地方）</li>
+<li>3、团队人数变多，提交的代码经常和其他成员冲突</li>
+<li>4、项目编译耗时较大</li>
+<li>5、模块的单元测试经常由于其他模块的修改而失败</li>
+</ul>
+<h3 id="组件化方案"><a href="#组件化方案" class="headerlink" title="组件化方案"></a>组件化方案</h3><h4 id="组件化方案的8条指标"><a href="#组件化方案的8条指标" class="headerlink" title="组件化方案的8条指标"></a>组件化方案的8条指标</h4><p>一个项目经过组件化后如何来评判，主要有以下几个<code>标准</code>：</p>
+<ul>
+<li>1、模块之间没有耦合，模块内部的修改不会应该其他模块</li>
+<li>2、模块可以单独编译</li>
+<li>3、模块间数据传递明确</li>
+<li>4、模块可以随时被另一个提供了相同功能的模块替换</li>
+<li>5、模块对外接口清晰且易维护</li>
+<li>6、当模块接口改变时，此模块的外部代码能够被高效重构</li>
+<li>7、尽量用最少的修改和代码，让现有的项目实现模块化</li>
+<li>8、支持OC和Swift，以及混编</li>
+</ul>
+<p>前4条主要用于<code>衡量一个模块是否真正解耦</code>，后4条主要用于衡量在项目中<code>实践中的易用程度</code></p>
+<h4 id="组件化原则"><a href="#组件化原则" class="headerlink" title="组件化原则"></a>组件化原则</h4><p>一个项目主要分为3层：<code>业务层</code>、<code>通用层</code>以及<code>基础层</code>，在进行组件化时，有以下几点说明</p>
+<p>![image.png](iOS架构 - 组件化方案 (1)/d45435499bcd48d69596779b778e2b39.png)</p>
+<ul>
+<li>只能上层对依赖，不能下层对上层的依赖，因为下层是对上层的抽象</li>
+<li>项目公共代码资源下沉</li>
+<li>横向的依赖尽量少有，最好下层至通用模块，或者基础模块</li>
+</ul>
+<p>**<br>**</p>
+<h4 id="组件化方案-1"><a href="#组件化方案-1" class="headerlink" title="组件化方案"></a>组件化方案</h4><p>常用的组件化方案主要有两种：</p>
+<ul>
+<li><code>本地组件化</code>：主要是通过在<code>工程中创建library</code>，利用<code>cocoapods</code>的<code>workspec</code>进行本地管理，不需要将项目上传git，而是直接在本项目中以framework的方法进行调用</li>
+<li><code>cocoapods组件化</code>：主要是利用cocoapods来进行模块的远程管理，需要将项目上传git（需要注意：这里的组件化模块分为<code>公有库</code>和<code>私有库</code>，对公司而言，一般是私有库）</li>
+</ul>
+<h3 id="本地组件化"><a href="#本地组件化" class="headerlink" title="本地组件化"></a>本地组件化</h3><h4 id="1、创建主工程"><a href="#1、创建主工程" class="headerlink" title="1、创建主工程"></a>1、创建主工程</h4><ul>
+<li>首先创建一个工程</li>
+</ul>
+<p>![image.png](iOS架构 - 组件化方案 (1)/d411eb30e54b48faa116bde3c19dd158.png)</p>
+<ul>
+<li>集成cocopods，进行本地管理：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ cd 项目目录</span><br><span class="line">$ pod init</span><br><span class="line">$ pod init</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>编辑podfile，并执行<code>pod install</code></li>
+</ul>
+<h4 id="2、创建组件"><a href="#2、创建组件" class="headerlink" title="2、创建组件"></a>2、创建组件</h4><p>假设有以下几个模块：</p>
+<ul>
+<li><code>主工程</code>：承载主要的表层业务代码</li>
+<li><code>Core</code>：独立存在，应用加密、接口请求等敏感代码</li>
+<li><code>Base</code>：基类封装，拓展，基本的数据处理</li>
+<li><code>Service</code>：服务层，封装业务工具类，例如网络层服务、持久化服务等</li>
+<li><code>Pods</code>：三方依赖</li>
+</ul>
+<p>其中，各个模块间的关系如下所示</p>
+<p>![image.png](iOS架构 - 组件化方案 (1)/abbca02925474c55ac37f24181eb711b.png)</p>
+<p>下面，我们来进行模块的创建，以<code>Core</code>模块为例：</p>
+<ul>
+<li>选择<code>new -&gt; project -&gt; iOS -&gt; Framework</code>，新建一个模块<br>![image.png](iOS架构 - 组件化方案 (1)/6e8b46b343d14fc4966346a3eb3734b1.png)选择正确的<code>Group</code> 和 <code>WorkSpace</code>（这里需要注意一点：创建的<code>library</code>最好放在<code>主工程根目录</code>下，否则后续<code>podfile</code>执行<code>pod install</code>时会报错）</li>
+</ul>
+<p>![image.png](iOS架构 - 组件化方案 (1)/57123daa0cf14b7d9c4878ed22645786.png)</p>
+<p>将创建的<code>library</code>的<code>Build Settings -&gt; Mach-O Type</code>修改为静态库 <code>Static Library</code></p>
+<p>![image.png](iOS架构 - 组件化方案 (1)/cd442535e97c43e880a4a8e743df2f92.png)</p>
+<h4 id="3、主工程调用library"><a href="#3、主工程调用library" class="headerlink" title="3、主工程调用library"></a>3、主工程调用library</h4><ul>
+<li>在CJLCore中新建一个文件，并添加如下代码</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;类需要声明为public</span><br><span class="line">public class CJLCoreSetting: NSObject &#123;</span><br><span class="line">    &#x2F;&#x2F;属性需要声明为public</span><br><span class="line">    public static let SCRET_KEY &#x3D; &quot;SCRET_KEY&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在<code>Build Phases -&gt; Headers -&gt; Public</code>中将新建的文件添加为public，这样主工程才能访问该文件</p>
+<p>![image.png](iOS架构 - 组件化方案 (1)/dc187aeebe7e457bbd5440e924d005b4.png)</p>
+<p>在主工程中，选择<code>target -&gt; Linked Frameworks Library</code>中添加<code>CJLCore</code>，只需要build主工程，library能够自动联编</p>
+<p>![image.png](iOS架构 - 组件化方案 (1)/36ce602f6cd04273831cd6ddafae8874.png)</p>
+<h4 id="4、使用"><a href="#4、使用" class="headerlink" title="4、使用"></a>4、使用</h4><p>首先<code>import CJLCore</code>，然后使用</p>
+<p>![image.png](iOS架构 - 组件化方案 (1)/ddb88b2f9adb401abe5f6e259cf8bf0d.png)</p>
+<p>这里需要注意的是，子library之间的互相调用，与主工程调用library类似，主需要添加依赖、暴露header即可</p>
+<h4 id="5、使用cocoapods管理三方依赖"><a href="#5、使用cocoapods管理三方依赖" class="headerlink" title="5、使用cocoapods管理三方依赖"></a>5、使用cocoapods管理三方依赖</h4><p>假设我们需要在<code>CJLCore</code>中封装网络层代码，需要用到三方库<code>Alamofire</code>，在podfile中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">platform :ios, &#39;9.0&#39;</span><br><span class="line">inhibit_all_warnings!</span><br><span class="line">use_frameworks!</span><br><span class="line"></span><br><span class="line">#配置workspace路径</span><br><span class="line">workspace &#39;Modularization.xcworkspace&#39;</span><br><span class="line"></span><br><span class="line">################# 三方依赖</span><br><span class="line"># 公有</span><br><span class="line">def workspace_pods</span><br><span class="line">  pod &#39;SwiftyJSON&#39;</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line"># 主工程</span><br><span class="line">def project_only_pods</span><br><span class="line">  pod &#39;SnapKit&#39;</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">#网络</span><br><span class="line">def network_layer_pods</span><br><span class="line">  pod &#39;Alamofire&#39;</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">################# 模块</span><br><span class="line">target &#39;CJLCore&#39; do</span><br><span class="line">  #配置libray路径</span><br><span class="line">  project &#39;CJLCore&#x2F;CJLCore.xcodeproj&#39;</span><br><span class="line">  </span><br><span class="line">  workspace_pods</span><br><span class="line">  network_layer_pods</span><br><span class="line"></span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">################# 主工程</span><br><span class="line">target &#39;Modularization&#39; do</span><br><span class="line">  </span><br><span class="line">  workspace_pods</span><br><span class="line">  project_only_pods</span><br><span class="line">  network_layer_pods</span><br><span class="line"></span><br><span class="line">  target &#39;ModularizationTests&#39; do</span><br><span class="line">    inherit! :search_paths</span><br><span class="line"></span><br><span class="line">  end</span><br><span class="line"></span><br><span class="line">  target &#39;ModularizationUITests&#39; do</span><br><span class="line"></span><br><span class="line">  end</span><br><span class="line"></span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<p>到此，一个本地组件化的模块就配置完成了</p>
+<h3 id="cocoapods组件化"><a href="#cocoapods组件化" class="headerlink" title="cocoapods组件化"></a>cocoapods组件化</h3><p>除了本地组件化，还可以使用<code>cocoapods</code>，其原理如下图所示</p>
+<p>![image.png](iOS架构 - 组件化方案 (1)/a9afd9886f6b49919a262e3f893e6fc8.png)这里还是以本地组件化中的结构为例</p>
+<h4 id="1、创建私有仓库"><a href="#1、创建私有仓库" class="headerlink" title="1、创建私有仓库"></a>1、创建私有仓库</h4><ul>
+<li>在github上创建一个MySpecs仓库<br>具体步骤：登录github–&gt;点击右上角“+”–&gt;选择 new repository–&gt;输入Repository name为MySpecs，选择仓库类型为 private，点击Create repository。</li>
+<li>将私有仓库添加至本地<code>~/.cocoapods/repos</code>目录</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod repo add mySpecs https:&#x2F;&#x2F;github.com&#x2F;xxx&#x2F;MySpecs.git</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="2、创建pods-工程，即组件化工程"><a href="#2、创建pods-工程，即组件化工程" class="headerlink" title="2、创建pods 工程，即组件化工程"></a>2、创建pods 工程，即组件化工程</h4><ul>
+<li>使用终端创建<code>CJLServices</code>模块</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod lib create CJLServices</span><br></pre></td></tr></table></figure>
+
+<p>根据提示依次输入：ios、swift、yes、none、no、CJL</p>
+<p>![image.png](iOS架构 - 组件化方案 (1)/5565cf790f424ae58611554ee82710a0.png)</p>
+<p>进入模块的目录，将文件拷贝至<code>CJLServices -&gt; Classes</code>中</p>
+<p>![image.png](iOS架构 - 组件化方案 (1)/444cac4f432a471d87197d9ff4be77a5.png)</p>
+<p>执行<code>pod install</code>,会将Classes更新至pods中</p>
+<p>![image.png](iOS架构 - 组件化方案 (1)/c66728c4363547cf87afd5817637a90b.png)</p>
+<p>执行结果</p>
+<h4 id="3、配置pods工程"><a href="#3、配置pods工程" class="headerlink" title="3、配置pods工程"></a>3、配置pods工程</h4><p>修改模块的配置文件，即<code>CJLServices.podspec</code></p>
+<ul>
+<li>如果需要依赖三方库，需要配置<code>s.dependency</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">s.dependency &#39;AFNetworking&#39;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>如果模块间需要相互引用，同样需要配置<code>s.dependency</code>，以<code>CJLBase</code>为例，需要引用<code>CJLService</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;********1、修改 podspec 文件</span><br><span class="line">s.dependency &#39;CJLServices&#39;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;********2、修改 podfile 文件</span><br><span class="line">pod &#39;CJLServices&#39;, :path &#x3D;&gt; &#39;..&#x2F;..&#x2F;CJLServices&#39;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>如果需要加载资源，例如图片、json、bundle文件等</li>
+</ul>
+<ul>
+<li><ul>
+<li>1、在模块的<code>Assets</code>文件夹 中添加资源文件</li>
+<li>2、在<code>specs</code>里配置资源路径（必须配置！！否则无法读取资源）</li>
+<li>3、访问时需要指定资源文件路径</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;*****1、修改 podspec 文件</span><br><span class="line">s.resource_bundles &#x3D; &#123;</span><br><span class="line">     &#39;CJLBase&#39; &#x3D;&gt; [&#39;CJLBase&#x2F;Assets&#x2F;*&#39;]</span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">&#x2F;&#x2F;*****2、使用</span><br><span class="line">let bundlePath: String &#x3D; Bundle.init(for: dynamicClass.self).resourcePath! + &quot;&#x2F;CJLBase.bundle&quot;</span><br><span class="line">let bundle &#x3D; Bundle(path: bundlePath)</span><br><span class="line">if let path &#x3D; bundle?.path(forResource: &quot;mouse&quot;, ofType: &quot;jpg&quot;)&#123;</span><br><span class="line">    self.imgView.image &#x3D; UIImage(contentsOfFile: path)</span><br><span class="line">&#125;           </span><br></pre></td></tr></table></figure>
+
+<p>同理，模块中的xib，json文件的获取方式也是一样的</p>
+<h4 id="4、提交至git"><a href="#4、提交至git" class="headerlink" title="4、提交至git"></a>4、提交至git</h4><p>这里提交至git的模块是pods工程才可以，以<code>CJLBase</code>为例</p>
+<ul>
+<li>需要在github上创建一个私有repository，命名为<code>CJLBase</code></li>
+<li>执行以下终端命令</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$git init</span><br><span class="line">$git add .</span><br><span class="line">$ git commit -am &quot;第一次提交&quot; </span><br><span class="line">&#x2F;&#x2F;即第一个步骤中创建的仓库地址</span><br><span class="line">$ git remote add origin https:&#x2F;&#x2F;github.com&#x2F;xxx&#x2F;CJLBase.git</span><br><span class="line"> </span><br><span class="line">$ git push origin master </span><br><span class="line">&#x2F;&#x2F;一定要有标签，不然会有下面的警告</span><br><span class="line">&#x2F;&#x2F;podspec文件中获取Git版本控制的项目需要tag号，</span><br><span class="line">$ git tag -m &quot;first release&quot; &quot;0.1.0&quot; </span><br><span class="line">$ git push --tags </span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="5、验证podspec文件"><a href="#5、验证podspec文件" class="headerlink" title="5、验证podspec文件"></a>5、验证podspec文件</h4><p>执行终端命令 <code>pod spec lint</code></p>
+<blockquote>
+<p>注意：<code>pod spec</code>相对于<code>pod lib</code>会更为精确，</p>
+<ul>
+<li><code>pod lib</code>相当于只验证一个本地仓库，</li>
+<li><code>pod spec</code>会同时验证本地仓库和远程仓库。</li>
+</ul>
+</blockquote>
+<p>**<br>**</p>
+<h4 id="6、提交到私有仓库"><a href="#6、提交到私有仓库" class="headerlink" title="6、提交到私有仓库"></a>6、提交到私有仓库</h4><p>执行以下命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pod repo push [本地Spec Repo名称][podspec文件路径]</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F;******举例</span><br><span class="line">$ pod repo push MySpecs CJLBase.podspec</span><br></pre></td></tr></table></figure>
+
+<p>提交成功后，可在本地仓库中看到提交路径<code>MySpecs -&gt; CJLBase</code></p>
+<h4 id="7、使用"><a href="#7、使用" class="headerlink" title="7、使用"></a>7、使用</h4><ul>
+<li>新建一个工程，在项目的podfile里添加</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#私有spec仓库的地址，而不是某个pod仓库的地址</span><br><span class="line">source &#39;https:&#x2F;&#x2F;github.com&#x2F;xxx&#x2F;MySpecs&#39;</span><br><span class="line">pod &#39;CJLBase&#39;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>执行<code>pod install</code>即可</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%8A%80%E6%9C%AF/" class="category-chain-item">技术</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%8A%80%E6%9C%AF/iOS%E8%BF%9B%E9%98%B6/" class="category-chain-item">iOS进阶</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/iOS/">#iOS</a>
+      
+        <a href="/tags/Runtime/">#Runtime</a>
+      
+        <a href="/tags/%E5%9F%BA%E7%A1%80/">#基础</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>iOS架构 - 组件化方案 (1)</div>
+      <div>blog.cfjia.cc/2022/03/22/iOS架构 - 组件化方案 (1)/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Beitragsautor</div>
+          <div>cfjia</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Veröffentlicht am</div>
+          <div>March 22, 2022</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>Urheberrechtshinweis</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/03/22/iOS%E6%9E%B6%E6%9E%84%20-%20%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88%20(2)/" title="iOS架构 - 组件化方案 (2)">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">iOS架构 - 组件化方案 (2)</span>
+                        <span class="visible-mobile">Vorheriger</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/12/02/RunLoop-Part2/" title="RunLoop的应用">
+                        <span class="hidden-mobile">RunLoop的应用</span>
+                        <span class="visible-mobile">Nächster</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>Inhaltsverzeichnis</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Stichwort</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog funktioniert am besten mit aktiviertem JavaScript</div>
+  </noscript>
+</body>
+</html>

@@ -1,37 +1,721 @@
-{% extends '_layout.swig' %}
-{% import '_macro/post.swig' as post_template %}
-{% import '_macro/sidebar.swig' as sidebar_template %}
 
 
-{% block title %}{{ page.title }} | {{ config.title }}{% endblock %}
+<!DOCTYPE html>
+<html lang="zh-Hans" data-default-color-scheme=auto>
 
-{% block page_class %}page-post-detail{% endblock %}
 
 
-{% block content %}
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="cfjia">
+  <meta name="keywords" content="iOS">
+  
+    <meta name="description" content="一、RunLoop与线程1. RunLoop与线程的关系苹果官方文档中，RunLoop的相关介绍写在线程编程指南中，可见RunLoop和线程的关系不一般。Threading Programming Guide（苹果官方文档） 1234567891011121314151617181920212223242526272829303132333435363738&#x2F;&#x2F;&#x2F; 全">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RunLoop的应用">
+<meta property="og:url" content="blog.cfjia.cc/2021/12/02/RunLoop-Part2/index.html">
+<meta property="og:site_name" content="黑夜里的眸">
+<meta property="og:description" content="一、RunLoop与线程1. RunLoop与线程的关系苹果官方文档中，RunLoop的相关介绍写在线程编程指南中，可见RunLoop和线程的关系不一般。Threading Programming Guide（苹果官方文档） 1234567891011121314151617181920212223242526272829303132333435363738&#x2F;&#x2F;&#x2F; 全">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-12-02T02:10:44.000Z">
+<meta property="article:modified_time" content="2022-04-14T14:02:26.578Z">
+<meta property="article:author" content="cfjia">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="Runtime">
+<meta property="article:tag" content="基础">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>RunLoop的应用 - 黑夜里的眸</title>
 
-  <div id="posts" class="posts-expand">
-    {{ post_template.render(page) }}
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
-    <div class="post-spread">
-      {% if theme.jiathis %}
-        {% include '_partials/share/jiathis.swig' %}
-      {% elseif theme.baidushare %}
-        {% include '_partials/share/baidushare.swig' %}
-      {% elseif theme.add_this_id %}
-        {% include '_partials/share/add-this.swig' %}
-      {% elseif theme.duoshuo_shortname and theme.duoshuo_share %}
-        {% include '_partials/share/duoshuo_share.swig' %}
-      {% endif %}
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.cfjia.cc","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 5.0.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>Startseite</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>Archiv</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>Kategorien</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>Schlagwörter</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>Über</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
     </div>
   </div>
+</nav>
 
-{% endblock %}
+  
 
-{% block sidebar %}
-  {{ sidebar_template.render(true) }}
-{% endblock %}
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="RunLoop的应用"></span>
+          
+        </div>
 
-{% block script_extra %}
-  {% include '_scripts/pages/post-details.swig' %}
-{% endblock %}
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-12-02 10:10" pubdate>
+          December 2, 2021 am
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.7k wörter
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          65 minuten
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">RunLoop的应用</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="一、RunLoop与线程"><a href="#一、RunLoop与线程" class="headerlink" title="一、RunLoop与线程"></a>一、RunLoop与线程</h1><h2 id="1-RunLoop与线程的关系"><a href="#1-RunLoop与线程的关系" class="headerlink" title="1. RunLoop与线程的关系"></a>1. RunLoop与线程的关系</h2><p>苹果官方文档中，<code>RunLoop</code>的相关介绍写在线程编程指南中，可见<code>RunLoop</code>和线程的关系不一般。<a href="https://link.juejin.cn/?target=https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html%23//apple_ref/doc/uid/10000057i-CH16-SW23">Threading Programming Guide（苹果官方文档）</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;&#x2F; 全局的Dictionary，key 是 pthread_t， value 是 CFRunLoopRef</span><br><span class="line">static CFMutableDictionaryRef loopsDic;</span><br><span class="line">&#x2F;&#x2F;&#x2F; 访问 loopsDic 时的锁</span><br><span class="line">static CFSpinLock_t loopsLock;</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F;&#x2F; 获取一个 pthread 对应的 RunLoop。</span><br><span class="line">CFRunLoopRef _CFRunLoopGet(pthread_t thread) &#123;</span><br><span class="line">    OSSpinLockLock(&amp;loopsLock);</span><br><span class="line">    </span><br><span class="line">    if (!loopsDic) &#123;</span><br><span class="line">        &#x2F;&#x2F; 第一次进入时，初始化全局Dic，并先为主线程创建一个 RunLoop。</span><br><span class="line">        loopsDic &#x3D; CFDictionaryCreateMutable();</span><br><span class="line">        CFRunLoopRef mainLoop &#x3D; _CFRunLoopCreate();</span><br><span class="line">        CFDictionarySetValue(loopsDic, pthread_main_thread_np(), mainLoop);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;&#x2F; 直接从 Dictionary 里获取。</span><br><span class="line">    CFRunLoopRef loop &#x3D; CFDictionaryGetValue(loopsDic, thread));</span><br><span class="line">    </span><br><span class="line">    if (!loop) &#123;</span><br><span class="line">        &#x2F;&#x2F;&#x2F; 取不到时，创建一个</span><br><span class="line">        loop &#x3D; _CFRunLoopCreate();</span><br><span class="line">        CFDictionarySetValue(loopsDic, thread, loop);</span><br><span class="line">        &#x2F;&#x2F;&#x2F; 注册一个回调，当线程销毁时，顺便也销毁其对应的 RunLoop。</span><br><span class="line">        _CFSetTSD(..., thread, loop, __CFFinalizeRunLoop);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    OSSpinLockUnLock(&amp;loopsLock);</span><br><span class="line">    return loop;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">CFRunLoopRef CFRunLoopGetMain() &#123;</span><br><span class="line">    return _CFRunLoopGet(pthread_main_thread_np());</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">CFRunLoopRef CFRunLoopGetCurrent() &#123;</span><br><span class="line">    return _CFRunLoopGet(pthread_self());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<p>从上面的代码可以得出：</p>
+<ul>
+<li><code>RunLoop</code>对象和线程是一一对应的关系</li>
+<li><code>RunLoop</code>保存在一个全局的<code>Dictionary</code>里，线程作为<code>key</code>，<code>RunLoop</code>作为<code>Value</code>;</li>
+<li>如果没有<code>RunLoop</code>，线程执行完任务就会退出；如果没有<code>RunLoop</code>，主线程执行完<code>Main()</code>函数就会退出，程序就不能处于运行状态；</li>
+<li><code>RunLoop</code>创建时机：线程刚创建并没有<code>RunLoop</code>对象，如果你不主动获取，那它一直都不会有。<code>RunLoop</code>会在第一次获取它时创建；</li>
+<li><code>RunLoop</code>销毁机制：<code>RunLoop</code>会在线程结束时销毁；</li>
+<li>主线程的<code>RunLoop</code>已经自动获取（创建），子线程默认没有开启<code>RunLoop</code>；</li>
+<li>主线程的<code>RunLoop</code>对象是在<code>UIApplicationMain</code>中通过<code>[NSRunLoop currentRunLoop]</code>获取，一旦发现它不存在，就会创建<code>RunLoop</code>对象。</li>
+</ul>
+<h2 id="2-开启子线程的RunLoop的过程"><a href="#2-开启子线程的RunLoop的过程" class="headerlink" title="2. 开启子线程的RunLoop的过程"></a>2. 开启子线程的RunLoop的过程</h2><h3 id="获取RunLoop对象"><a href="#获取RunLoop对象" class="headerlink" title="获取RunLoop对象"></a>获取RunLoop对象</h3><p>可以通过以下代码来获取<code>RunLoop</code>对象：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Foundation</span><br><span class="line">[NSRunLoop mainRunLoop];     &#x2F;&#x2F; 获取主线程的 RunLoop 对象</span><br><span class="line">[NSRunLoop currentRunLoop];  &#x2F;&#x2F; 获取当前线程的 RunLoop 对象</span><br><span class="line">&#x2F;&#x2F; Core Foundation</span><br><span class="line">CFRunLoopGetMain();     &#x2F;&#x2F; 获取主线程的 RunLoop 对象</span><br><span class="line">CFRunLoopGetCurrent();  &#x2F;&#x2F; 获取当前线程的 RunLoop 对象</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="启动子线程的RunLoop"><a href="#启动子线程的RunLoop" class="headerlink" title="启动子线程的RunLoop"></a>启动子线程的RunLoop</h3><p>可以通过以下代码来启动子线程的<code>RunLoop</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Foundation</span><br><span class="line">[[NSRunLoop currentRunLoop] run];</span><br><span class="line">[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];</span><br><span class="line">&#x2F;&#x2F; Core Foundation</span><br><span class="line">CFRunLoopRun();</span><br><span class="line">&#x2F;&#x2F; 第3个参数：设置为 true，代表执行完 Source&#x2F;Port 后就会退出当前 loop</span><br><span class="line">CFRunLoopRunInMode(kCFRunLoopDefaultMode, 1.0e10, false);  </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="3-如何实现一个常驻线程"><a href="#3-如何实现一个常驻线程" class="headerlink" title="3. 如何实现一个常驻线程"></a>3. 如何实现一个常驻线程</h2><ul>
+<li>好处：经常用到子线程的时候，不用一直创建销毁，提高性能；</li>
+<li>条件：该任务需是串行，而非并发；</li>
+<li>步骤：<ol>
+<li>获取/创建当前线程的RunLoop；</li>
+<li>向该<code>RunLoop</code>中添加一个<code>Source/port</code>等来维持<code>RunLoop</code>的事件循环（如果Mode里没有任何<code>Source0/Source1/Timer/Observer，RunLoop</code>会立马退出）；</li>
+<li>启动该RunLoop</li>
+</ol>
+</li>
+</ul>
+<p>以下是示例代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; ViewController.m</span><br><span class="line">#import &quot;ViewController.h&quot;</span><br><span class="line">#import &quot;HTThread.h&quot;</span><br><span class="line"></span><br><span class="line">@interface ViewController ()</span><br><span class="line">@property (nonatomic, strong) HTThread *thread;</span><br><span class="line">@property (nonatomic, assign, getter&#x3D;isStoped) BOOL stopped;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation ViewController</span><br><span class="line"></span><br><span class="line">- (void)viewDidLoad &#123;</span><br><span class="line">    [super viewDidLoad];</span><br><span class="line">    </span><br><span class="line">    __weak typeof(self) weakSelf &#x3D; self;</span><br><span class="line">    </span><br><span class="line">    self.stopped &#x3D; NO;</span><br><span class="line">    self.thread &#x3D; [[HTThread alloc] initWithBlock:^&#123;</span><br><span class="line">        NSLog(@&quot;begin-----%@&quot;, [NSThread currentThread]);</span><br><span class="line">        </span><br><span class="line">        &#x2F;&#x2F; ① 获取&#x2F;创建当前线程的 RunLoop </span><br><span class="line">        &#x2F;&#x2F; ② 向该 RunLoop 中添加一个 Source&#x2F;Port 等来维持 RunLoop 的事件循环</span><br><span class="line">        [[NSRunLoop currentRunLoop] addPort:[[NSPort alloc] init] forMode:NSDefaultRunLoopMode];</span><br><span class="line">    </span><br><span class="line">        while (weakSelf &amp;&amp; !weakSelf.isStoped) &#123;</span><br><span class="line">            &#x2F;&#x2F; ③ 启动该 RunLoop</span><br><span class="line">            &#x2F;* </span><br><span class="line">              [[NSRunLoop currentRunLoop] run]</span><br><span class="line">              如果调用 RunLoop 的 run 方法，则会开启一个永不销毁的线程</span><br><span class="line">              因为 run 方法会通过反复调用 runMode:beforeDate: 方法，以运行在 NSDefaultRunLoopMode 模式下</span><br><span class="line">              换句话说，该方法有效地开启了一个无限的循环，处理来自 RunLoop 的输入源 Sources 和 Timers 的数据</span><br><span class="line">            *&#x2F; </span><br><span class="line">            [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];</span><br><span class="line">        &#125;</span><br><span class="line">        NSLog(@&quot;end-----%@&quot;, [NSThread currentThread]);    </span><br><span class="line">    &#125;];</span><br><span class="line">    [self.thread start];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)touchesBegan:(NSSet&lt;UITouch *&gt; *)touches withEvent:(UIEvent *)event</span><br><span class="line">&#123;</span><br><span class="line">    if (!self.thread) return;</span><br><span class="line">    [self performSelector:@selector(test) onThread:self.thread withObject:nil waitUntilDone:NO];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 子线程需要执行的任务</span><br><span class="line">- (void)test</span><br><span class="line">&#123;</span><br><span class="line">    NSLog(@&quot;%s-----%@&quot;, __func__, [NSThread currentThread]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 停止子线程的 RunLoop</span><br><span class="line">- (void)stopThread</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;&#x2F; 设置标记为 YES</span><br><span class="line">    self.stopped &#x3D; YES;   </span><br><span class="line">    &#x2F;&#x2F; 停止 RunLoop</span><br><span class="line">    CFRunLoopStop(CFRunLoopGetCurrent());    </span><br><span class="line">    NSLog(@&quot;%s-----%@&quot;, __func__, [NSThread currentThread]);</span><br><span class="line">    &#x2F;&#x2F; 清空线程</span><br><span class="line">    self.thread &#x3D; nil;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)dealloc</span><br><span class="line">&#123;</span><br><span class="line">    NSLog(@&quot;%s&quot;, __func__);</span><br><span class="line">    </span><br><span class="line">    if (!self.thread) return;</span><br><span class="line">    &#x2F;&#x2F; 在子线程调用（waitUntilDone设置为YES，代表子线程的代码执行完毕后，当前方法才会继续往下执行）</span><br><span class="line">    [self performSelector:@selector(stopThread) onThread:self.thread withObject:nil waitUntilDone:YES];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; HTThread.h</span><br><span class="line">#import &lt;Foundation&#x2F;Foundation.h&gt;</span><br><span class="line">@interface HTThread : NSThread</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; HTThread.m</span><br><span class="line">#import &quot;HTThread.h&quot;</span><br><span class="line">@implementation HTThread</span><br><span class="line">- (void)dealloc</span><br><span class="line">&#123;</span><br><span class="line">    NSLog(@&quot;%s&quot;, __func__);</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>点击 view，接着退出当前 ViewController。输出如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">begin-----&lt;HTThread: 0x600002b71240&gt;&#123;number &#x3D; 6, name &#x3D; (null)&#125;</span><br><span class="line">-[ViewController test]-----&lt;HTThread: 0x600002b71240&gt;&#123;number &#x3D; 6, name &#x3D; (null)&#125;</span><br><span class="line">-[ViewController dealloc]</span><br><span class="line">-[ViewController stopThread]-----&lt;HTThread: 0x600002b71240&gt;&#123;number &#x3D; 6, name &#x3D; (null)&#125;</span><br><span class="line">end-----&lt;HTThread: 0x600002b71240&gt;&#123;number &#x3D; 6, name &#x3D; (null)&#125;</span><br><span class="line">-[HTThread dealloc]</span><br></pre></td></tr></table></figure>
+
+<h1 id="二、RunLoop与NSTimer"><a href="#二、RunLoop与NSTimer" class="headerlink" title="二、RunLoop与NSTimer"></a>二、RunLoop与NSTimer</h1><ul>
+<li>根据RunLoop的原理，我们知道，<code>NSTimer</code>是由<code>RunLoop</code>来管理的，<code>NSTimer</code>其实就是<code>CFRunLoopTimerRef</code>，他们之间是<code>toll-free bridged</code>的，可以相互转换；</li>
+<li>如果我们在子线程上使用<code>NSTimer</code>，就必须开启子线程的<code>RunLoop</code>，否则定时器无法生效</li>
+</ul>
+<h2 id="1-解决TableView滑动时NSTimer失效的问题"><a href="#1-解决TableView滑动时NSTimer失效的问题" class="headerlink" title="1. 解决TableView滑动时NSTimer失效的问题"></a>1. 解决TableView滑动时NSTimer失效的问题</h2><ul>
+<li>问题：<code>RunLoop</code>同一时间只能运行在一种模式下，当我们滑动<code>tableview/scrollview</code>的时候<code>RunLoop</code>会切换到<code>UITrackingRunLoopMode</code>界面追踪模式下。如果我们的<code>NSTimer</code>是添加到<code>RunLoop</code>的<code>KCFRunLoopDefaultMode/NSDefaultRunLoopMode</code>默认模式下的话，此时<code>NStimer</code>是会失效的。</li>
+<li>解决：我们可以将<code>NSTimer</code>添加到<code>RunLoop</code>的<code>KCFRunLoopCommonModes/NSRunLoopCommonModes</code>通用模式下，来保证无论是在默认模式下还是界面追踪模式下<code>NSTimer</code>都可以执行的。</li>
+</ul>
+<h3 id="NSTimer的创建方式"><a href="#NSTimer的创建方式" class="headerlink" title="NSTimer的创建方式"></a>NSTimer的创建方式</h3><p>如果我们是通过以下方法创建的<code>NSTimer</code>，是自动添加到<code>RunLoop</code>的默认模式下的</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[<span class="built_in">NSTimer</span> scheduledTimerWithTimeInterval:<span class="number">1.0</span> repeats:<span class="literal">YES</span> block:^(<span class="built_in">NSTimer</span> * _Nonnull timer) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;123&quot;</span>);</span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure>
+
+<p>我们可以通过以下方法创建<code>NSTimer</code>，来自定义添加到<code>RunLoop</code>的某种模式下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">NSTimer *timer &#x3D; [NSTimer timerWithTimeInterval:1.0 repeats:YES block:^(NSTimer * _Nonnull timer) &#123;</span><br><span class="line">    NSLog(@&quot;123&quot;);</span><br><span class="line">&#125;];</span><br><span class="line">[[NSRunLoop currentRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意：</strong> 如果是通过<code>timerxxx</code>开头方法创建的<code>NSTimer</code>是不会自动添加到<code>RunLoop</code>中的，所以一定要记得手动添加，否则<code>NSTimer</code>不生效。</p>
+<h2 id="2-NSTimer和CADisplayLink"><a href="#2-NSTimer和CADisplayLink" class="headerlink" title="2. NSTimer和CADisplayLink"></a>2. NSTimer和CADisplayLink</h2><ul>
+<li>不准时：<code>NSTimer</code>和<code>CADisplayLink</code>底层都是基于<code>Runloop</code>的<code>CFRunLoopTimerRef</code>实现的，也就是说它们依赖于<code>Runloop</code>。如果<code>Runloop</code>的任务过于繁重，会导致它们不准时。</li>
+<li>循环引用</li>
+</ul>
+<p>比如<code>NSTimer</code>每1.0秒就会执行一次任务，<code>Runloop</code>每进行一次循环，就会看一下<code>NSTimer</code>的时间是否达到1.0秒，是的话就执行任务。但是由于<code>Runloop</code>每一次循环的任务不一样，所花费的时间就不固定。假设第一次循环所花时间为 0.2s，第二次 0.3s，第三次 0.3s，则再过 0.2s 就会执行<code>NSTimer</code>的任务，这时候可能<code>Runloop</code>的任务过于繁重，第四次花了0.5s，那加起来时间就是 1.3s，导致<code>NSTimer</code>不准时。</p>
+<p>解决方法：使用 GCD 的定时器。GCD 的定时器是直接跟系统内核挂钩的，而且它不依赖于<code>RunLoop</code>，所以它非常的准时。示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">dispatch_queue_t queue &#x3D; dispatch_queue_create(&quot;myqueue&quot;, DISPATCH_QUEUE_SERIAL);        &#x2F;&#x2F;创建定时器 </span><br><span class="line">dispatch_source_t timer &#x3D; dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);    &#x2F;&#x2F;设置时间</span><br><span class="line">（start:几s后开始执行； interval:时间间隔）    uint64_t start &#x3D; 2.0;    &#x2F;&#x2F;2s后开始执行    </span><br><span class="line">uint64_t interval &#x3D; 1.0; &#x2F;&#x2F;每隔1s执行    </span><br><span class="line">dispatch_source_set_timer(timer, dispatch_time(DISPATCH_TIME_NOW, start * NSEC_PER_SEC), interval * NSEC_PER_SEC, 0);    &#x2F;&#x2F;设置回调    </span><br><span class="line">dispatch_source_set_event_handler(timer, ^&#123;       NSLog(@&quot;%@&quot;,[NSThread currentThread]);    &#125;);   </span><br><span class="line">&#x2F;&#x2F;启动定时器    </span><br><span class="line">dispatch_resume(timer);    </span><br><span class="line">NSLog(@&quot;%@&quot;,[NSThread currentThread]);        </span><br><span class="line">self.timer &#x3D; timer;</span><br><span class="line">&#x2F;* 2020-02-01 21:34:23.036474+0800 多线程[7309:1327653] &lt;NSThread: 0x600001a5cfc0&gt;&#123;number &#x3D; 1, name &#x3D; main&#125; 2020-02-01 21:34:25.036832+0800 多线程[7309:1327705] &lt;NSThread: 0x600001acb600&gt;&#123;number &#x3D; 7, name &#x3D; (null)&#125; 2020-02-01 21:34:26.036977+0800 多线程[7309:1327705] &lt;NSThread: 0x600001acb600&gt;&#123;number &#x3D; 7, name &#x3D; (null)&#125; 2020-02-01 21:34:27.036609+0800 多线程[7309:1327707] &lt;NSThread: 0x600001a1e5c0&gt;&#123;number &#x3D; 4, name &#x3D; (null)&#125; *&#x2F;</span><br></pre></td></tr></table></figure>
+
+
+
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%8A%80%E6%9C%AF/" class="category-chain-item">技术</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%8A%80%E6%9C%AF/iOS%E8%BF%9B%E9%98%B6/" class="category-chain-item">iOS进阶</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/iOS/">#iOS</a>
+      
+        <a href="/tags/Runtime/">#Runtime</a>
+      
+        <a href="/tags/%E5%9F%BA%E7%A1%80/">#基础</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>RunLoop的应用</div>
+      <div>blog.cfjia.cc/2021/12/02/RunLoop-Part2/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Beitragsautor</div>
+          <div>cfjia</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Veröffentlicht am</div>
+          <div>December 2, 2021</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>Urheberrechtshinweis</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/03/22/iOS%E6%9E%B6%E6%9E%84%20-%20%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88%20(1)/" title="iOS架构 - 组件化方案 (1)">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">iOS架构 - 组件化方案 (1)</span>
+                        <span class="visible-mobile">Vorheriger</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/11/22/RunLoop-Part1/" title="RunLoop的原理">
+                        <span class="hidden-mobile">RunLoop的原理</span>
+                        <span class="visible-mobile">Nächster</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>Inhaltsverzeichnis</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Stichwort</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog funktioniert am besten mit aktiviertem JavaScript</div>
+  </noscript>
+</body>
+</html>
