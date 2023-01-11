@@ -18,13 +18,13 @@
   
     <meta name="description" content="Runtime-内存结构">
 <meta property="og:type" content="article">
-<meta property="og:title" content="iOS面试题-Part1">
+<meta property="og:title" content="iOS面试题(1)">
 <meta property="og:url" content="blog.cfjia.cc/2022/12/21/iOS%E9%9D%A2%E8%AF%95%E9%A2%98-1/index.html">
 <meta property="og:site_name" content="黑夜里的眸">
 <meta property="og:description" content="Runtime-内存结构">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-12-21T12:00:00.000Z">
-<meta property="article:modified_time" content="2023-01-10T06:53:55.909Z">
+<meta property="article:modified_time" content="2023-01-11T07:37:42.850Z">
 <meta property="article:author" content="cfjia">
 <meta property="article:tag" content="iOS">
 <meta property="article:tag" content="Runtime">
@@ -33,7 +33,7 @@
   
   
   
-  <title>iOS面试题-Part1 - 黑夜里的眸</title>
+  <title>iOS面试题(1) - 黑夜里的眸</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -199,7 +199,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="iOS面试题-Part1"></span>
+            <span id="subtitle" data-typed-text="iOS面试题(1)"></span>
           
         </div>
 
@@ -222,7 +222,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          4k 字
+          4.9k 字
         
       </span>
     
@@ -233,7 +233,7 @@
         
         
         
-          34 分钟
+          41 分钟
         
       </span>
     
@@ -271,13 +271,20 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">iOS面试题-Part1</h1>
+            <h1 style="display: none">iOS面试题(1)</h1>
             
             
               <div class="markdown-body">
                 
                 <h3 id="1-介绍下runtime的内存模型-isa，对象，类，metaclass，结构体的存储信息等"><a href="#1-介绍下runtime的内存模型-isa，对象，类，metaclass，结构体的存储信息等" class="headerlink" title="1. 介绍下runtime的内存模型(isa，对象，类，metaclass，结构体的存储信息等)"></a>1. 介绍下runtime的内存模型(isa，对象，类，metaclass，结构体的存储信息等)</h3><p><strong>对象</strong>：OC中的对象指向的是一个objc_object指针类型，typedef struct objc_object *id；从它的结构体中可以看出，它包含一个isa指针，指向的是这个对象的类对象。一个对象的实例就是通过isa指针找到它自己的class，而这个class中存储的就是这个实例的方法列表，属性列表，成员变量等相关信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs objective-c">&#x2F;&#x2F;&#x2F; Represents an instance of a class.<br>struct objc_object &#123;<br>    Class _Nonnull isa  OBJC_ISA_AVAILABILITY;<br>&#125;;<br><br>&#x2F;&#x2F;&#x2F; A pointer to an instance of a class.<br>typedef struct objc_object *id;<br></code></pre></td></tr></table></figure>
+
+<p>源码地址：<a target="_blank" rel="noopener" href="https://opensource.apple.com/source/objc4/objc4-818.2/runtime/objc-private.h.auto.html">https://opensource.apple.com/source/objc4/objc4-818.2/runtime/objc-private.h.auto.html</a></p>
 <p><strong>类</strong>：在OC中类也是用class表示的，实际上它指向的是objc_class指针类型,typedef struct objc_class *Class;而objc_class继承于objc_object,这就很好的解释了万物皆对象，oc中的类也是对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs objective-c">struct objc_class &#123;<br>    Class _Nonnull isa  OBJC_ISA_AVAILABILITY;<br><br>#if !__OBJC2__<br>    Class _Nullable super_class                              OBJC2_UNAVAILABLE;<br>    const char * _Nonnull name                               OBJC2_UNAVAILABLE;<br>    long version                                             OBJC2_UNAVAILABLE;<br>    long info                                                OBJC2_UNAVAILABLE;<br>    long instance_size                                       OBJC2_UNAVAILABLE;<br>    struct objc_ivar_list * _Nullable ivars                  OBJC2_UNAVAILABLE;<br>    struct objc_method_list * _Nullable * _Nullable methodLists                    OBJC2_UNAVAILABLE;<br>    struct objc_cache * _Nonnull cache                       OBJC2_UNAVAILABLE;<br>    struct objc_protocol_list * _Nullable protocols          OBJC2_UNAVAILABLE;<br>#endif<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
 <h3 id="2-为什么要设计metaclass"><a href="#2-为什么要设计metaclass" class="headerlink" title="2. 为什么要设计metaclass?"></a>2. 为什么要设计metaclass?</h3><p>符合单一职责设计原则，从面向对象的设计理念来说，万物皆对象，类也是对象，当然元类也是对象，存在的目的一方面可以让对象的继承链关系完美闭环，也保证能完美的复用传递消息机制。这样设计也是参考了smalltalk的理念。</p>
 <h3 id="3-class-copyIvarList-和class-copyPropertyList-区别"><a href="#3-class-copyIvarList-和class-copyPropertyList-区别" class="headerlink" title="3. class_copyIvarList()和class_copyPropertyList()区别"></a>3. class_copyIvarList()和class_copyPropertyList()区别</h3><p>class_copyIvarList()可以获取到所有的成员变量，包括花括号内的变量(包含.h和.m)</p>
 <p>class_copyPropertyList()只能获取到@property关键字声明的属性(.h和.m)</p>
@@ -347,6 +354,10 @@
 
 </li>
 </ul>
+<h3 id="10-load、initialize方法的区别是什么？在继承关系中他们有什么区别？"><a href="#10-load、initialize方法的区别是什么？在继承关系中他们有什么区别？" class="headerlink" title="10. load、initialize方法的区别是什么？在继承关系中他们有什么区别？"></a>10. load、initialize方法的区别是什么？在继承关系中他们有什么区别？</h3><p><strong>调用顺序：启动-&gt;load(自动调用)-&gt;[xxClass loadData]-&gt;initialize(自动调用)-&gt;loadData</strong></p>
+<ul>
+<li></li>
+</ul>
 
                 
               </div>
@@ -403,7 +414,7 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>iOS面试题-Part1</div>
+      <div>iOS面试题(1)</div>
       <div>blog.cfjia.cc/2022/12/21/iOS面试题-1/</div>
     </div>
     <div class="license-meta">
@@ -448,9 +459,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/12/22/iOS%E9%9D%A2%E8%AF%95%E9%A2%98-2/" title="iOS面试题-Part2">
+                      <a href="/2022/12/22/iOS%E9%9D%A2%E8%AF%95%E9%A2%98-2/" title="iOS面试题(2)">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">iOS面试题-Part2</span>
+                        <span class="hidden-mobile">iOS面试题(2)</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -458,8 +469,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part2/" title="iOS组件化方案-Part2">
-                        <span class="hidden-mobile">iOS组件化方案-Part2</span>
+                      <a href="/2022/03/22/iOS%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88-Part2/" title="iOS组件化方案(2)">
+                        <span class="hidden-mobile">iOS组件化方案(2)</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
