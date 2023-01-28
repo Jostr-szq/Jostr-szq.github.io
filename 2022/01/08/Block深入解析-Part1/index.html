@@ -24,8 +24,12 @@
 <meta property="og:description" content="1. Block本质1.1 定义一个Block 定义一个block.c文件，写入以下代码:  12345678#include &lt;stdio.h&gt;int main() &amp;#123;    void(^block)(void) &#x3D; ^&amp;#123;        printf(&quot;hello&quot;);    &amp;#125;;    block();&amp;#125;   通">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="/2022/01/08/Block%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90-Part1/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0ZvcmV2ZXJfd2o=,size_16,color_FFFFFF,t_70.png">
+<meta property="og:image" content="/2022/01/08/Block%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90-Part1/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0ZvcmV2ZXJfd2o=,size_16,color_FFFFFF,t_70-20230128145758720.jpeg">
+<meta property="og:image" content="/2022/01/08/Block%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90-Part1/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0ZvcmV2ZXJfd2o=,size_16,color_FFFFFF,t_70-20230128145828967.jpeg">
+<meta property="og:image" content="/2022/01/08/Block%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90-Part1/20210317150948590.jpeg">
+<meta property="og:image" content="/2022/01/08/Block%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90-Part1/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0ZvcmV2ZXJfd2o=,size_16,color_FFFFFF,t_70-20230128150025679.jpeg">
 <meta property="article:published_time" content="2022-01-08T12:00:00.000Z">
-<meta property="article:modified_time" content="2023-01-11T14:14:24.058Z">
+<meta property="article:modified_time" content="2023-01-28T07:01:59.621Z">
 <meta property="article:author" content="cfjia">
 <meta property="article:tag" content="iOS">
 <meta property="article:tag" content="Block">
@@ -224,7 +228,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          5.3k 字
+          5.5k 字
         
       </span>
     
@@ -235,7 +239,7 @@
         
         
         
-          44 分钟
+          46 分钟
         
       </span>
     
@@ -349,7 +353,23 @@
 </ol>
 </li>
 </ul>
-<h1 id="2-Block底层源码分析"><a href="#2-Block底层源码分析" class="headerlink" title="2. Block底层源码分析"></a>2. <code>Block</code>底层源码分析</h1>
+<h1 id="2-Block底层源码分析"><a href="#2-Block底层源码分析" class="headerlink" title="2. Block底层源码分析"></a>2. <code>Block</code>底层源码分析</h1><h2 id="2-1-block源码位置"><a href="#2-1-block源码位置" class="headerlink" title="2.1 block源码位置"></a>2.1 block源码位置</h2><ul>
+<li><p>在<code>block</code>处打上断点，分析运行时的<code>block</code>，如下所示：</p>
+<img src="/2022/01/08/Block%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90-Part1/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0ZvcmV2ZXJfd2o=,size_16,color_FFFFFF,t_70-20230128145758720.jpeg" srcset="/img/loading.gif" lazyload class="" title="在这里插入图片描述">
+</li>
+<li><p>执行结果如下：</p>
+<img src="/2022/01/08/Block%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90-Part1/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0ZvcmV2ZXJfd2o=,size_16,color_FFFFFF,t_70-20230128145828967.jpeg" srcset="/img/loading.gif" lazyload class="" title="在这里插入图片描述">
+</li>
+<li><p>加<code>objc_retainBlock</code>符号断点，继续向下执行，会执行到<code>_Block_copy</code>，如下：</p>
+<img src="/2022/01/08/Block%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90-Part1/20210317150948590.jpeg" srcset="/img/loading.gif" lazyload class="" title="在这里插入图片描述">
+</li>
+<li><p>继续加<code>_Block_copy</code>符号断点，向下执行，会发现在<code>libsystem_blocks.dylib</code>源码中:</p>
+<img src="/2022/01/08/Block%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90-Part1/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0ZvcmV2ZXJfd2o=,size_16,color_FFFFFF,t_70-20230128150025679.jpeg" srcset="/img/loading.gif" lazyload class="" title="在这里插入图片描述">
+</li>
+<li><p>可以到苹果开源网站下载最新的libclosure-74源码，分析<code>_Block_copy</code>的源码实现，可以发现<code>block</code>在底层的真正类型是<code>Block_layout</code>。</p>
+</li>
+</ul>
+
                 
               </div>
             
