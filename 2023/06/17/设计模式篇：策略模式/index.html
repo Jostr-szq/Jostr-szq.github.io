@@ -106,16 +106,16 @@
 
 
 
-  <meta name="description" content="策略模式策略模式定义了一系列可以在运行时设置或切换的可互换的对象。这个模式分为三个部分：  使用策略的对象。当模式用于iOS应用程序开发时，这通常是视图控制器，但从技术上讲，它可以是任何需要可互换行为的对象。 策略协议定义了每个策略必须实施的方法。 策略是符合策略协议的对象。  为什么要使用它？当您有两个或更多可互换的不同行为时，请使用策略模式。 这种模式类似于委托模式：两种模式都依赖于协议而不是">
+  <meta name="description" content="策略模式策略模式定义了一系列可以在运行时设置或切换的可互换的对象。这个模式分为三个部分：  使用策略的对象。当模式用于iOS应用程序开发时，这通常是视图控制器，但从技术上讲，它可以是任何需要可互换行为的对象。 策略协议定义了每个策略必须实施的方法。 策略是符合策略协议的对象。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="设计模式篇：（二）策略模式">
 <meta property="og:url" content="blog.cfjia.cc/2023/06/17/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%AF%87%EF%BC%9A%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/index.html">
 <meta property="og:site_name" content="黑夜里的眸">
-<meta property="og:description" content="策略模式策略模式定义了一系列可以在运行时设置或切换的可互换的对象。这个模式分为三个部分：  使用策略的对象。当模式用于iOS应用程序开发时，这通常是视图控制器，但从技术上讲，它可以是任何需要可互换行为的对象。 策略协议定义了每个策略必须实施的方法。 策略是符合策略协议的对象。  为什么要使用它？当您有两个或更多可互换的不同行为时，请使用策略模式。 这种模式类似于委托模式：两种模式都依赖于协议而不是">
+<meta property="og:description" content="策略模式策略模式定义了一系列可以在运行时设置或切换的可互换的对象。这个模式分为三个部分：  使用策略的对象。当模式用于iOS应用程序开发时，这通常是视图控制器，但从技术上讲，它可以是任何需要可互换行为的对象。 策略协议定义了每个策略必须实施的方法。 策略是符合策略协议的对象。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="/2023/06/17/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%AF%87%EF%BC%9A%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/Strategy_Diagram.png">
 <meta property="article:published_time" content="2023-06-17T04:52:16.000Z">
-<meta property="article:modified_time" content="2023-06-19T06:22:45.359Z">
+<meta property="article:modified_time" content="2023-06-19T06:28:24.466Z">
 <meta property="article:author" content="cfjia">
 <meta property="article:tag" content="策略">
 <meta name="twitter:card" content="summary">
@@ -257,7 +257,7 @@
         
           
   
-  <li class="menu-item menu-item-categories menu-item-active">
+  <li class="menu-item menu-item-categories">
     <a href="/categories/" rel="section">
       <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类<span class="badge">5</span>
       </a>
@@ -442,6 +442,8 @@
 <li>策略协议定义了每个策略必须实施的方法。</li>
 <li>策略是符合策略协议的对象。</li>
 </ul>
+<a id="more"></a>
+
 <h2 id="为什么要使用它？"><a href="#为什么要使用它？" class="headerlink" title="为什么要使用它？"></a>为什么要使用它？</h2><p>当您有两个或更多可互换的不同行为时，请使用策略模式。</p>
 <p>这种模式类似于委托模式：两种模式都依赖于协议而不是具体对象来增加灵活性。因此，任何实现策略协议的对象都可以在运行时用作策略。</p>
 <p>与委托不同，策略模式使用一系列对象。</p>
